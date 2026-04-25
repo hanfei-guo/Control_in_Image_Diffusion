@@ -135,74 +135,74 @@ For each case:
 
 ### Color Cases
 
-#### `322895-254516` -> `000000322895__000000254516`
+#### `000000322895__000000254516`
 
 ![322895-254516 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/322895-254516.png)
 ![322895-254516 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/322895-254516.png)
 
-#### `190923-47010` -> `000000190923__000000047010`
+#### `000000190923__000000047010`
 
 ![190923-47010 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/190923-47010.png)
 ![190923-47010 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/190923-47010.png)
 
-#### `377575-85157` -> `000000377575__000000085157`
+#### `000000377575__000000085157`
 
 ![377575-85157 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/377575-85157.png)
 ![377575-85157 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/377575-85157.png)
 
-#### `148730-394940` -> `000000148730__000000394940`
+#### `000000148730__000000394940`
 
 ![148730-394940 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/148730-394940.png)
 ![148730-394940 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/148730-394940.png)
 
-#### `336232` -> `000000336232__000000109976`
+#### `000000336232__000000109976`
 
 ![336232 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/336232.png)
 ![336232 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/336232.png)
 
-#### `85682` -> `000000085682__000000187734`
+#### `000000085682__000000187734`
 
 ![85682 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/85682.png)
 ![85682 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/85682.png)
 
 ### Artifacts / Cleanup Cases
 
-#### `17959-198915` -> `000000017959__000000198915`
+#### `000000017959__000000198915`
 
 ![17959-198915 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/17959-198915.png)
 ![17959-198915 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/17959-198915.png)
 
-#### `491613` -> `000000491613__000000475191`
+#### `000000491613__000000475191`
 
 ![491613 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/491613.png)
 ![491613 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/491613.png)
 
-#### `492077` -> `000000492077__000000189226`
+#### `000000492077__000000189226`
 
 ![492077 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/492077.png)
 ![492077 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/492077.png)
 
-#### `364322` -> `000000364322__000000343934`
+#### `000000364322__000000343934`
 
 ![364322 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/364322.png)
 ![364322 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/364322.png)
 
-#### `322895` -> `000000322895__000000254516`
+#### `000000322895__000000254516`
 
 ![322895 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/322895.png)
 ![322895 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/322895.png)
 
-#### `328286` -> `000000328286__000000307145`
+#### `000000328286__000000307145`
 
 ![328286 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/328286.png)
 ![328286 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/328286.png)
 
-#### `0001993` -> `000000001993__000000050165`
+#### `000000001993__000000050165`
 
 ![0001993 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/0001993.png)
 ![0001993 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/0001993.png)
 
-#### `476787` -> `000000476787__000000280779`
+#### `000000476787__000000280779`
 
 ![476787 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/476787.png)
 ![476787 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/476787.png)
