@@ -22,20 +22,20 @@ import matplotlib.pyplot as plt
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 SELECTED_CASES = (
-    {"category": "color", "query": "322895-254516", "sample_id": "000000322895__000000254516"},
-    {"category": "color", "query": "190923-47010", "sample_id": "000000190923__000000047010"},
-    {"category": "color", "query": "377575-85157", "sample_id": "000000377575__000000085157"},
-    {"category": "color", "query": "148730-394940", "sample_id": "000000148730__000000394940"},
-    {"category": "color", "query": "336232", "sample_id": "000000336232__000000109976"},
-    {"category": "color", "query": "85682", "sample_id": "000000085682__000000187734"},
-    {"category": "artifacts_correct", "query": "17959-198915", "sample_id": "000000017959__000000198915"},
-    {"category": "artifacts_correct", "query": "491613", "sample_id": "000000491613__000000475191"},
-    {"category": "artifacts_correct", "query": "492077", "sample_id": "000000492077__000000189226"},
-    {"category": "artifacts_correct", "query": "364322", "sample_id": "000000364322__000000343934"},
-    {"category": "artifacts_correct", "query": "322895", "sample_id": "000000322895__000000254516"},
-    {"category": "artifacts_correct", "query": "328286", "sample_id": "000000328286__000000307145"},
-    {"category": "artifacts_correct", "query": "0001993", "sample_id": "000000001993__000000050165"},
-    {"category": "artifacts_correct", "query": "476787", "sample_id": "000000476787__000000280779"},
+    {"category": "color", "sample_id": "000000322895__000000254516"},
+    {"category": "color", "sample_id": "000000190923__000000047010"},
+    {"category": "color", "sample_id": "000000377575__000000085157"},
+    {"category": "color", "sample_id": "000000148730__000000394940"},
+    {"category": "color", "sample_id": "000000336232__000000109976"},
+    {"category": "color", "sample_id": "000000085682__000000187734"},
+    {"category": "artifacts_correct", "sample_id": "000000017959__000000198915"},
+    {"category": "artifacts_correct", "sample_id": "000000491613__000000475191"},
+    {"category": "artifacts_correct", "sample_id": "000000492077__000000189226"},
+    {"category": "artifacts_correct", "sample_id": "000000364322__000000343934"},
+    {"category": "artifacts_correct", "sample_id": "000000322895__000000254516"},
+    {"category": "artifacts_correct", "sample_id": "000000328286__000000307145"},
+    {"category": "artifacts_correct", "sample_id": "000000001993__000000050165"},
+    {"category": "artifacts_correct", "sample_id": "000000476787__000000280779"},
 )
 
 
@@ -74,6 +74,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--ip-adapter-scale", type=float, default=0.8)
     return parser
 
+
 def selected_cases_dataframe(manifest: pd.DataFrame) -> pd.DataFrame:
     rows: list[dict[str, str]] = []
     for case in SELECTED_CASES:
@@ -84,8 +85,7 @@ def selected_cases_dataframe(manifest: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "category": case["category"],
-                "query": case["query"],
-                "resolution_type": "hardcoded_sample_id",
+                "selection_source": "hardcoded_sample_id",
                 "sample_id": match["sample_id"],
                 "structure_sample_id": match["structure_sample_id"],
                 "semantic_sample_id": match["semantic_sample_id"],
@@ -105,10 +105,6 @@ def ensure_output_dirs(root: Path, tau_values: list[float]) -> dict[str, Path]:
         output_dir.mkdir(parents=True, exist_ok=True)
         output_dirs[mode] = output_dir
     return output_dirs
-
-
-def safe_name(text: str) -> str:
-    return text.replace("__", "--").replace("/", "_").replace("\\", "_").replace(" ", "")
 
 
 def mode_label(mode: str) -> str:
@@ -138,7 +134,7 @@ def make_comparison_figure(row: pd.Series, final_root: Path, hard_mode: str, smo
         ax.set_yticks([])
         for spine in ax.spines.values():
             spine.set_visible(False)
-    fig.suptitle(f"{row.query} -> {row.sample_id}", fontsize=11)
+    fig.suptitle(f"{row.sample_id}", fontsize=11)
     fig.tight_layout()
     output_base.parent.mkdir(parents=True, exist_ok=True)
     for ext in (".png", ".pdf"):
@@ -166,7 +162,7 @@ def make_tau_sweep_figure(row: pd.Series, ablation_root: Path, tau_values: list[
         ax.set_yticks([])
         for spine in ax.spines.values():
             spine.set_visible(False)
-    fig.suptitle(f"Tau Sweep | {row.query} -> {row.sample_id}", fontsize=11)
+    fig.suptitle(f"Tau Sweep | {row.sample_id}", fontsize=11)
     fig.tight_layout()
     output_base.parent.mkdir(parents=True, exist_ok=True)
     for ext in (".png", ".pdf"):
@@ -191,7 +187,7 @@ def build_notebook(
         nbf.v4.new_markdown_cell(
             "# Selected Slide Cases\n"
             "This notebook shows the curated 14-case export only. "
-            "The sample ids are hard-coded in the export script, so there is no runtime query-resolution rule."
+            "The sample ids are hard-coded in the export script, so there is no runtime lookup rule."
         ),
         nbf.v4.new_code_cell(
             "from pathlib import Path\n"
@@ -207,7 +203,7 @@ def build_notebook(
             "selected = pd.read_csv(SELECTED_CSV, dtype={'sample_id': str, 'structure_sample_id': str, 'semantic_sample_id': str})\n"
             "metrics = pd.read_csv(CURATED_METRICS_CSV, dtype={'sample_id': str})\n"
             "summary = pd.read_csv(CURATED_SUMMARY_CSV)\n"
-            "display(selected)\n"
+            "display(selected[['category', 'sample_id', 'caption']])\n"
             "display(summary)"
         ),
         nbf.v4.new_markdown_cell(
@@ -225,12 +221,12 @@ def build_notebook(
             continue
         cells.append(nbf.v4.new_markdown_cell(f"## {category.replace('_', ' ').title()}"))
         for row in subset.itertuples(index=False):
-            comparison_path = comparison_root / row.category / f"{safe_name(row.query)}.png"
-            tau_path = tau_root / row.category / f"{safe_name(row.query)}.png"
+            comparison_path = comparison_root / row.category / f"{row.sample_id}.png"
+            tau_path = tau_root / row.category / f"{row.sample_id}.png"
             cells.append(
                 nbf.v4.new_markdown_cell(
-                    f"### `{row.query}` -> `{row.sample_id}`\n"
-                    f"- Resolution: `{row.resolution_type}`\n"
+                    f"### `{row.sample_id}`\n"
+                    f"- Category: `{row.category}`\n"
                     f"- Caption: {row.caption}"
                 )
             )
@@ -305,7 +301,7 @@ def main() -> None:
     comparison_root = args.figures_root / "comparisons"
     tau_root = args.figures_root / "tau_sweeps"
     for row in selected.itertuples(index=False):
-        output_name = safe_name(row.query)
+        output_name = row.sample_id
         make_comparison_figure(
             pd.Series(row._asdict()),
             args.final_root,

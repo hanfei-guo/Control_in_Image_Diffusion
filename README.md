@@ -126,7 +126,7 @@ GitHub can render repository images directly inside the README, so the most impo
 
 ## Curated Slide Cases
 
-The slide-case export is now fully hard-coded in [scripts/export_selected_slide_candidates.py](scripts/export_selected_slide_candidates.py). There is no runtime query-resolution logic: the exact `sample_id` for each case is fixed in code, and the README below renders those same curated outputs directly.
+The slide-case export is now fully hard-coded in [scripts/export_selected_slide_candidates.py](scripts/export_selected_slide_candidates.py). There is no runtime lookup logic: the exact `sample_id` for each case is fixed in code, and the README below renders those same curated outputs directly.
 
 For each case:
 
@@ -137,75 +137,75 @@ For each case:
 
 #### `000000322895__000000254516`
 
-![322895-254516 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/322895-254516.png)
-![322895-254516 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/322895-254516.png)
+![000000322895__000000254516 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/000000322895__000000254516.png)
+![000000322895__000000254516 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/000000322895__000000254516.png)
 
 #### `000000190923__000000047010`
 
-![190923-47010 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/190923-47010.png)
-![190923-47010 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/190923-47010.png)
+![000000190923__000000047010 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/000000190923__000000047010.png)
+![000000190923__000000047010 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/000000190923__000000047010.png)
 
 #### `000000377575__000000085157`
 
-![377575-85157 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/377575-85157.png)
-![377575-85157 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/377575-85157.png)
+![000000377575__000000085157 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/000000377575__000000085157.png)
+![000000377575__000000085157 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/000000377575__000000085157.png)
 
 #### `000000148730__000000394940`
 
-![148730-394940 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/148730-394940.png)
-![148730-394940 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/148730-394940.png)
+![000000148730__000000394940 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/000000148730__000000394940.png)
+![000000148730__000000394940 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/000000148730__000000394940.png)
 
 #### `000000336232__000000109976`
 
-![336232 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/336232.png)
-![336232 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/336232.png)
+![000000336232__000000109976 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/000000336232__000000109976.png)
+![000000336232__000000109976 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/000000336232__000000109976.png)
 
 #### `000000085682__000000187734`
 
-![85682 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/85682.png)
-![85682 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/85682.png)
+![000000085682__000000187734 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/000000085682__000000187734.png)
+![000000085682__000000187734 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/000000085682__000000187734.png)
 
 ### Artifacts / Cleanup Cases
 
 #### `000000017959__000000198915`
 
-![17959-198915 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/17959-198915.png)
-![17959-198915 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/17959-198915.png)
+![000000017959__000000198915 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/000000017959__000000198915.png)
+![000000017959__000000198915 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/000000017959__000000198915.png)
 
 #### `000000491613__000000475191`
 
-![491613 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/491613.png)
-![491613 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/491613.png)
+![000000491613__000000475191 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/000000491613__000000475191.png)
+![000000491613__000000475191 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/000000491613__000000475191.png)
 
 #### `000000492077__000000189226`
 
-![492077 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/492077.png)
-![492077 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/492077.png)
+![000000492077__000000189226 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/000000492077__000000189226.png)
+![000000492077__000000189226 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/000000492077__000000189226.png)
 
 #### `000000364322__000000343934`
 
-![364322 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/364322.png)
-![364322 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/364322.png)
+![000000364322__000000343934 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/000000364322__000000343934.png)
+![000000364322__000000343934 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/000000364322__000000343934.png)
 
 #### `000000322895__000000254516`
 
-![322895 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/322895.png)
-![322895 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/322895.png)
+![000000322895__000000254516 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/000000322895__000000254516.png)
+![000000322895__000000254516 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/000000322895__000000254516.png)
 
 #### `000000328286__000000307145`
 
-![328286 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/328286.png)
-![328286 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/328286.png)
+![000000328286__000000307145 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/000000328286__000000307145.png)
+![000000328286__000000307145 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/000000328286__000000307145.png)
 
 #### `000000001993__000000050165`
 
-![0001993 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/0001993.png)
-![0001993 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/0001993.png)
+![000000001993__000000050165 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/000000001993__000000050165.png)
+![000000001993__000000050165 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/000000001993__000000050165.png)
 
 #### `000000476787__000000280779`
 
-![476787 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/476787.png)
-![476787 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/476787.png)
+![000000476787__000000280779 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/000000476787__000000280779.png)
+![000000476787__000000280779 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/000000476787__000000280779.png)
 
 ## Current Result Snapshot
 

@@ -1,8 +1,7 @@
 [
   {
     "category": "color",
-    "query": "322895-254516",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000322895__000000254516",
     "structure_sample_id": "000000322895",
     "semantic_sample_id": "000000254516",
@@ -13,8 +12,7 @@
   },
   {
     "category": "color",
-    "query": "190923-47010",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000190923__000000047010",
     "structure_sample_id": "000000190923",
     "semantic_sample_id": "000000047010",
@@ -25,8 +23,7 @@
   },
   {
     "category": "color",
-    "query": "377575-85157",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000377575__000000085157",
     "structure_sample_id": "000000377575",
     "semantic_sample_id": "000000085157",
@@ -37,8 +34,7 @@
   },
   {
     "category": "color",
-    "query": "148730-394940",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000148730__000000394940",
     "structure_sample_id": "000000148730",
     "semantic_sample_id": "000000394940",
@@ -49,8 +45,7 @@
   },
   {
     "category": "color",
-    "query": "336232",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000336232__000000109976",
     "structure_sample_id": "000000336232",
     "semantic_sample_id": "000000109976",
@@ -61,8 +56,7 @@
   },
   {
     "category": "color",
-    "query": "85682",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000085682__000000187734",
     "structure_sample_id": "000000085682",
     "semantic_sample_id": "000000187734",
@@ -73,8 +67,7 @@
   },
   {
     "category": "artifacts_correct",
-    "query": "17959-198915",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000017959__000000198915",
     "structure_sample_id": "000000017959",
     "semantic_sample_id": "000000198915",
@@ -85,8 +78,7 @@
   },
   {
     "category": "artifacts_correct",
-    "query": "491613",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000491613__000000475191",
     "structure_sample_id": "000000491613",
     "semantic_sample_id": "000000475191",
@@ -97,8 +89,7 @@
   },
   {
     "category": "artifacts_correct",
-    "query": "492077",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000492077__000000189226",
     "structure_sample_id": "000000492077",
     "semantic_sample_id": "000000189226",
@@ -109,8 +100,7 @@
   },
   {
     "category": "artifacts_correct",
-    "query": "364322",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000364322__000000343934",
     "structure_sample_id": "000000364322",
     "semantic_sample_id": "000000343934",
@@ -121,8 +111,7 @@
   },
   {
     "category": "artifacts_correct",
-    "query": "322895",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000322895__000000254516",
     "structure_sample_id": "000000322895",
     "semantic_sample_id": "000000254516",
@@ -133,8 +122,7 @@
   },
   {
     "category": "artifacts_correct",
-    "query": "328286",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000328286__000000307145",
     "structure_sample_id": "000000328286",
     "semantic_sample_id": "000000307145",
@@ -145,8 +133,7 @@
   },
   {
     "category": "artifacts_correct",
-    "query": "0001993",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000001993__000000050165",
     "structure_sample_id": "000000001993",
     "semantic_sample_id": "000000050165",
@@ -157,8 +144,7 @@
   },
   {
     "category": "artifacts_correct",
-    "query": "476787",
-    "resolution_type": "hardcoded_sample_id",
+    "selection_source": "hardcoded_sample_id",
     "sample_id": "000000476787__000000280779",
     "structure_sample_id": "000000476787",
     "semantic_sample_id": "000000280779",
