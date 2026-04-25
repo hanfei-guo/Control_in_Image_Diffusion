@@ -109,6 +109,22 @@ GitHub can render repository images directly inside the README, so the most impo
 </p>
 
 <p align="center">
+  <img src="figures/final_stage/hard_search_tradeoff.png" alt="Hard-switch trade-off search" width="920">
+</p>
+
+<p align="center">
+  <em>Hard-switch search on the conflict subset. Smaller <code>tau</code> favors semantic alignment, while larger <code>tau</code> preserves structure more strongly.</em>
+</p>
+
+<p align="center">
+  <img src="figures/final_stage/smooth_search_tradeoff.png" alt="Smooth-schedule trade-off search" width="920">
+</p>
+
+<p align="center">
+  <em>Smooth-schedule search on the conflict subset. The plot shows how changing <code>tau</code>, <code>sharpness</code>, and scale settings moves the method along the same structure-versus-semantics frontier.</em>
+</p>
+
+<p align="center">
   <img src="figures/final_stage/hard_vs_smooth_tau_metrics.png" alt="Hard versus smooth tau sweep" width="920">
 </p>
 
