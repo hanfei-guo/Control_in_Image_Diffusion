@@ -95,6 +95,42 @@ Final summary files:
 - `outputs/combined_experiments/final_eval_1000_conflict/pairwise_summary.csv`
 - `outputs/combined_experiments/final_eval_1000_conflict/per_sample_metrics.csv`
 
+## Visual Summary
+
+GitHub can render repository images directly inside the README, so the most important final-stage plots are embedded below.
+
+<p align="center">
+  <img src="figures/final_stage/schedule_overview.png" alt="Time-step scheduling overview" width="920">
+</p>
+
+<p align="center">
+  <em>Time-step scheduling overview. Hard switch uses a step function at <code>tau</code>; smooth scheduling replaces the step with a sigmoid transition. <code>tau</code> shifts the crossover point in time, while <code>sharpness</code> controls how abrupt the transition is around that point.</em>
+</p>
+
+<p align="center">
+  <img src="figures/final_stage/hard_vs_smooth_tau_metrics.png" alt="Hard versus smooth tau sweep" width="920">
+</p>
+
+<p align="center">
+  <em>Matched-<code>tau</code> comparison between hard and smooth schedules. This plot shows whether smoothing creates a better compromise or simply moves along the same structure-versus-semantics trade-off curve.</em>
+</p>
+
+<p align="center">
+  <img src="figures/final_stage/final_method_bars.png" alt="Final method comparison" width="920">
+</p>
+
+<p align="center">
+  <em>Full-set comparison on 1,000 conflict pairs. Lower Canny Edge MSE means better structure preservation; higher CLIP similarity means better semantic alignment.</em>
+</p>
+
+<p align="center">
+  <img src="figures/final_stage/tau_sweep_examples.png" alt="Tau sweep qualitative examples" width="920">
+</p>
+
+<p align="center">
+  <em>Qualitative tau sweep examples. For the same conflict pair, changing the transition point visibly shifts the output between structural fidelity and semantic appearance.</em>
+</p>
+
 ## Current Result Snapshot
 
 Final full-set comparison on `1000` conflict pairs:
