@@ -1,0 +1,11 @@
+{
+  "hard_search_root": "C:\\Users\\hanfield\\PROJECTS_C_DISK\\CMU_Courses\\10623_generative_ai\\Project\\outputs\\combined_experiments\\search_100_conflict",
+  "smooth_search_root": "C:\\Users\\hanfield\\PROJECTS_C_DISK\\CMU_Courses\\10623_generative_ai\\Project\\outputs\\combined_experiments\\search_100_conflict_smooth",
+  "best_hard_mode": "tau_0p25",
+  "best_hard_tau": 0.25,
+  "best_smooth_mode": "smooth_sharpness__tau_0p25__sharp_16p0",
+  "best_smooth_tau": 0.25,
+  "best_smooth_sharpness": 16.0,
+  "best_smooth_control_max_scale": 1.0,
+  "best_smooth_ip_max_scale": 0.8
+}

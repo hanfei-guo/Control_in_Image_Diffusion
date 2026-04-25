@@ -1,0 +1,16 @@
+{
+  "controlnet": {
+    "count": 1000,
+    "canny_mse_mean": 0.13684315490722657,
+    "canny_mse_std": 0.07815631494236895,
+    "clip_similarity_mean": 0.7873885851800442,
+    "clip_similarity_std": 0.08824011793730402
+  },
+  "ip_adapter": {
+    "count": 1000,
+    "canny_mse_mean": 0.17318446731567383,
+    "canny_mse_std": 0.08464808731685085,
+    "clip_similarity_mean": 0.8457481949329376,
+    "clip_similarity_std": 0.06119145899202349
+  }
+}

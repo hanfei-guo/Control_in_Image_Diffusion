@@ -1,0 +1,23 @@
+{
+  "naive_combined": {
+    "count": 1000,
+    "canny_mse_mean": 0.13746417617797851,
+    "canny_mse_std": 0.07484336711579517,
+    "clip_similarity_mean": 0.6381970150470734,
+    "clip_similarity_std": 0.10675079370118695
+  },
+  "smooth_sharpness__tau_0p25__sharp_16p0": {
+    "count": 1000,
+    "canny_mse_mean": 0.18181506729125976,
+    "canny_mse_std": 0.07234741461617121,
+    "clip_similarity_mean": 0.7974261469244956,
+    "clip_similarity_std": 0.07606696956272538
+  },
+  "tau_0p25": {
+    "count": 1000,
+    "canny_mse_mean": 0.18196673965454102,
+    "canny_mse_std": 0.07179301394060726,
+    "clip_similarity_mean": 0.8194960814416409,
+    "clip_similarity_std": 0.0684219971347162
+  }
+}

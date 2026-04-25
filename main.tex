@@ -1,0 +1,190 @@
+\documentclass[twocolumn,11pt]{article}
+
+% Packages
+\usepackage{natbib}      % For bibliography management
+\usepackage{graphicx}    % For including graphics
+\usepackage{amsmath}     % For math symbols and equations
+\usepackage{geometry}    % To adjust page margins
+\usepackage{hyperref}    % For hyperlinks in the document
+\usepackage{times}
+\usepackage[switch]{lineno}      % For line numbers
+
+% Set the page geometry
+\geometry{a4paper, margin=0.75in}
+
+% Begin Document
+\begin{document}
+
+% Title
+\title{Evaluating Structural vs. Semantic Control in Image Diffusion: Midway Report}
+\author{Kangjie Lu (kangjiel@andrew.cmu.edu) \\
+        Luyi Miao (luyimiao@andrew.cmu.edu) \\
+        Hanfei Guo (hanfeig@andrew.cmu.edu)\\
+10-423/623 Generative AI Course Project}
+\date{\today}
+\maketitle
+
+\linenumbers
+
+\section{Introduction}
+Text-to-image diffusion models often struggle to resolve conflicting multi-modal conditions. In this project, we study the interaction between structural conditioning (via ControlNet) and semantic conditioning (via IP-Adapter) on a subset of the COCO 2017 dataset. Our long-term goal remains the same as in the proposal: test whether a training-free time-step scheduling strategy can better reconcile these two objectives than a naive simultaneous combination.
+
+By the midway stage, however, the report focus shifts from planned work to completed infrastructure and validated baselines. We have finished a reproducible 1{,}000-image evaluation pipeline, implemented and run the isolated ControlNet and IP-Adapter baselines on Stable Diffusion v1.5, and built automated evaluation and visualization code. These baseline results now give us a trustworthy starting point for the final-stage conflict and scheduling experiments.
+
+\section{Dataset / Task}
+
+We study conditional image generation on a fixed 1{,}000-image subset of the COCO 2017 validation split. The subset is obtained programmatically to keep the data source reproducible and aligned with the de-facto public split. Each image is resized to $512 \times 512$, paired with its caption, and converted into a Canny edge map for the structure-guided baseline.
+
+The midway task is intentionally narrower than the full proposal. Rather than directly claiming success on the final scheduling method, we first evaluate two isolated baselines on the same images: a ControlNet baseline conditioned on the target edge map and caption, and an IP-Adapter baseline conditioned on the source image and caption. This setup isolates the structural-versus-semantic trade-off that motivates the final combined-control study.
+
+We report two metrics that are fully implemented and validated in the current codebase. Canny Edge MSE measures structural fidelity by comparing the generated image's extracted edges against the target edge map; lower is better. CLIP image-image similarity measures semantic alignment between the generated image and the reference image; higher is better. Our original proposal also mentioned mask-based metrics, but we defer Mask IoU to the final-stage conflict setting. This is a deliberate stage-specific choice rather than a dropped component: the midway question is the structural-versus-semantic trade-off in the exact ControlNet-Canny setting, for which an edge-based metric is the most direct and least noisy match. Region-level mask fidelity becomes more informative once we evaluate object- or region-level conflicts in the final combined-control experiments.
+
+\section{Related Work}
+
+Our approach builds upon foundational conditioning mechanisms for diffusion models. \citet{zhang2023controlnet} introduce ControlNet, which utilizes zero-initialized convolutional layers to inject spatial conditions into pretrained diffusion models. Similarly, \citet{mou2023t2iadapter} propose T2I-Adapter, a lightweight and plug-and-play framework for incorporating spatial control signals by aligning intermediate features. For semantic and style guidance, \citet{ye2023ipadapter} introduce IP-Adapter, which injects image features through a decoupled cross-attention mechanism.
+
+Recent literature has explored improving the compatibility and integration of multiple control modules. \citet{ran2023xadapter} propose X-Adapter, which enables cross-version compatibility of plug-and-play modules via feature-space alignment. Furthermore, \citet{lin2024ctrlx} introduce Ctrl-X, a training-free framework that enables structure and appearance control through feed-forward manipulation, while \citet{lin2024ctrladapter} propose Ctrl-Adapter, which adapts pretrained ControlNet modules to new diffusion backbones. More recently, \citet{liu2025icas} introduced ICAS, which optimizes multi-subject style transfer by fine-tuning the content injection branch and introducing a cyclic embedding mechanism. While these recent frameworks achieve strong multi-condition control through architectural modifications or fine-tuning, our work explores an alternative, training-free direction.
+
+To theoretically motivate our temporal intervention, we draw on the inherent coarse-to-fine generative dynamics of diffusion models. Recent analyses, such as \citet{rethinking2024snr}, demonstrate that the denoising trajectory is heavily dictated by the Signal-to-Noise Ratio (SNR): high-noise stages establish global layouts and low-frequency structures, whereas low-noise stages refine high-frequency textures and details. Empirically, \citet{hertz2022prompt} show through cross-attention control that geometric structures and content mappings are primarily formed during the earliest denoising steps. 
+
+Inspired by these theoretical insights, our project explores how temporal dynamics can be leveraged for practical multi-condition control. Rather than training new architectures or adapters, we investigate the inherent cross-attention interference between commonly used modules (e.g., ControlNet and IP-Adapter) \citep{zhang2023controlnet, ye2023ipadapter} under conflicting prompts. By implementing a training-free scheduling intervention, we aim to better understand these interference patterns and evaluate a lightweight solution. 
+
+
+\section{Methods}
+Our implementation uses Stable Diffusion v1.5 as the shared generative backbone through the Hugging Face \texttt{diffusers} library. By midway, we have completed two baseline pipelines. The first is a Canny-ControlNet pipeline that receives the target edge map and caption. The second is an IP-Adapter pipeline that receives the source image and caption. Both baselines run at the same resolution and use the same downstream evaluation code, which makes the comparison controlled and directly interpretable.
+
+We currently generate images with 30 denoising steps at $512 \times 512$ resolution and store every output for later inspection. The evaluation stack computes per-sample Canny Edge MSE and CLIP similarity, writes a per-sample CSV, and aggregates summary statistics for each method. This infrastructure is already complete and directly supports the quantitative figures in the current report.
+
+The final-stage method under development keeps the same backbone and controllers but changes how they are activated over time. The hypothesis is that ControlNet should dominate the earlier high-noise stage, where global layout is formed, and that IP-Adapter should become more influential later, when semantic appearance and fine details are refined. We have already scaffolded conflict-paired inputs, naive combined control, hard-switch scheduling, and smooth scheduling infrastructure, but the main validated contribution of the midway report remains the completed baseline comparison.
+
+\paragraph{Implementation details and reproducibility.} Unless otherwise noted, all midway baselines use a fixed base seed of 10623 with row-specific generator seeds defined as \texttt{base\_seed + row\_index}. The prompt for each COCO image is the longest non-empty caption associated with that image. Both baselines use the \texttt{DPMSolverMultistepScheduler}, 30 denoising steps, classifier-free guidance scale 7.5, image resolution $512 \times 512$, and the same negative prompt for low-quality or distorted outputs. The ControlNet baseline uses conditioning scale 1.0, while the IP-Adapter baseline uses image-prompt scale 0.8. Canny edge maps are extracted with thresholds 100 and 200. CLIP similarity is computed as cosine similarity between L2-normalized image embeddings from CLIP ViT-B/32. For the midway paired comparison, both methods are evaluated on the same sample IDs. For the final conflict experiments, the structure input and semantic reference are constructed from a fixed random permutation with no fixed points, using sample seed 10623 and pairing seed 10624.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/transition_threshold.png}
+    \caption{An overview of the proposed time-step scheduling strategy. We prioritize structural conditioning $\gamma_t$ (ControlNet) during the high-noise phase and transition to semantic conditioning $\lambda_t$ (IP-Adapter) at threshold $\tau T$ for fine-detail refinement.}
+    \label{fig:overview_of_strategy}
+\end{figure}
+
+As illustrated in Figure \ref{fig:overview_of_strategy}, the planned intervention is implemented as a dynamic weighting function. We denote the structural conditioning weight as $\gamma_t$ and the semantic conditioning weight as $\lambda_t$. The final-stage experiments will test whether temporally decoupling the structural ``Where'' from the semantic ``What'' can improve over a naive simultaneous combination under conflicting conditions.
+
+
+\section{Midway Baseline Results}
+
+Table \ref{tab:baseline_results} summarizes the two completed baselines on the full 1{,}000-image subset. The results match the intended trade-off between the two controllers. ControlNet achieves better structure preservation, with lower mean Canny Edge MSE, while IP-Adapter achieves better semantic preservation, with higher mean CLIP similarity.
+
+The per-sample paired comparison is more informative than the means alone. On 89.2\% of paired samples, ControlNet produces lower Canny Edge MSE than IP-Adapter. On 81.3\% of paired samples, IP-Adapter produces higher CLIP similarity than ControlNet. Both expected inequalities hold simultaneously on 72.4\% of samples. This is the core midway takeaway: the baselines already separate cleanly enough to justify the final combined-control study.
+
+We also quantify the strength of this separation rather than relying only on plots. The mean paired delta in Canny Edge MSE (IP-Adapter minus ControlNet) is $+0.0363$, corresponding to a paired effect size of $d_z \approx 1.05$. The mean paired delta in CLIP similarity is $+0.0584$, with $d_z \approx 0.78$. Under a two-sided sign test on the paired win rates, both asymmetries are overwhelmingly significant ($p < 10^{-90}$). These statistics support the same qualitative conclusion as Figure~\ref{fig:midway_quantitative}: ControlNet is consistently more structural, while IP-Adapter is consistently more semantic.
+
+\begin{table}[h]
+\centering
+\caption{Completed midway baseline results on the 1{,}000-image COCO subset. Lower Canny Edge MSE is better; higher CLIP similarity is better.}
+\label{tab:baseline_results}
+\setlength{\tabcolsep}{4pt}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lcc}
+\hline
+\textbf{Method} & \textbf{Canny Edge MSE $\downarrow$} & \textbf{CLIP Similarity $\uparrow$} \\
+\hline
+ControlNet baseline & $0.1368 \pm 0.0782$ & $0.7874 \pm 0.0882$ \\
+IP-Adapter baseline & $0.1732 \pm 0.0846$ & $0.8457 \pm 0.0612$ \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=0.96\textwidth]{figures/midway_baseline_quantitative.pdf}
+    \caption{Midway quantitative baseline results. Top row: boxplots of Canny Edge MSE and CLIP similarity for the two isolated baselines. Bottom row: paired delta histograms on the same 1{,}000 images. Positive Canny delta means ControlNet has lower structural error; positive CLIP delta means IP-Adapter has higher semantic similarity.}
+    \label{fig:midway_quantitative}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+    \includegraphics[width=0.96\textwidth]{figures/midway_baseline_gallery.pdf}
+    \caption{Representative qualitative comparison between the two isolated baselines. Each row shows the source image, the target Canny map, the ControlNet output, and the IP-Adapter output. The gallery is useful because it makes the structural-versus-semantic trade-off visually legible rather than purely numerical.}
+    \label{fig:midway_gallery}
+\end{figure*}
+
+\section{Planned Final Experiments}
+The final-stage experiments remain organized around the same research question from the proposal: under conflicting structural and semantic conditions, can a schedule over denoising time outperform a naive simultaneous combination? We will compare isolated ControlNet, isolated IP-Adapter, naive combined control, hard-switch scheduling, and smooth scheduling under deliberately conflict-paired inputs.
+
+\begin{table}[h]
+\centering
+\caption{Skeleton table for the final-stage comparison. The midway report completes the first two rows and defines the remaining final deliverables.}
+\label{tab:final_skeleton}
+\setlength{\tabcolsep}{4pt}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lcc}
+\hline
+\textbf{Setting} & \textbf{Canny Edge MSE $\downarrow$} & \textbf{CLIP Similarity $\uparrow$} \\
+\hline
+ControlNet baseline & 0.1368 & 0.7874 \\
+IP-Adapter baseline & 0.1732 & 0.8457 \\
+Naive combined (conflict) & TBD & TBD \\
+Hard-switch schedule & TBD & TBD \\
+Smooth schedule & TBD & TBD \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Final-stage ablation plan. This table makes the remaining experiments more explicit than a single high-level comparison table.}
+\label{tab:ablation_plan}
+\setlength{\tabcolsep}{3pt}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lll}
+\hline
+\textbf{Ablation Axis} & \textbf{Candidate Settings} & \textbf{Purpose} \\
+\hline
+Schedule type & naive / hard-switch / smooth & test whether temporal scheduling helps at all \\
+Transition location $\tau$ & $\{0.25, 0.40, 0.50, 0.60, 0.75\}$ & map the structure-semantic trade-off curve \\
+Search protocol & 100-pair coarse search, then 500--1000-pair confirmation & separate ranking from final confirmation \\
+Randomness control & fixed seeds for search, repeated seeds for best settings & test whether gains are stable rather than incidental \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+\section{Thought-Experiment on Compute}
+The completed midway experiments have been run on a local NVIDIA RTX 5060 Ti 16GB GPU. The full 1{,}000-image baseline sweep across both ControlNet and IP-Adapter took approximately 4.0 GPU-hours end-to-end. Since this sweep contains 2{,}000 total generations (1{,}000 ControlNet and 1{,}000 IP-Adapter outputs), the average wall-clock generation cost is about 7.2 seconds per image. Averaged across the two baselines, this corresponds to roughly 2.0 GPU-hours per method, with ControlNet modestly slower than IP-Adapter in practice.
+
+This is a modest compute budget, but for this particular project that is a strength rather than a weakness. Our contribution is an inference-time control study, not the training of a new diffusion model from scratch. The scientific burden therefore lies in careful paired comparisons, conflict construction, and interpretable evaluation rather than raw GPU scale. To make the budget legible in cloud terms, a comparable single-GPU cloud instance such as an AWS \texttt{g6.xlarge} (L4-class GPU) costs roughly \$0.8--\$0.9 per hour in \texttt{us-east-1} at the time of writing, so the completed baseline sweep corresponds to only about \$3--\$4 of cloud-equivalent compute.
+
+If we had an additional \$450 in AWS credits, we would not spend it on larger aligned-control baselines because those are already stable. Instead, we would spend it on statistical confidence for the final question. A concrete plan is: (1) a coarse search over roughly 10--12 hard-switch and smooth-schedule candidates on 100--300 conflict pairs; (2) confirmation runs for the top 3--5 schedule candidates plus the naive combined baseline on 500--1{,}000 conflict pairs; and (3) repeated-seed reruns for the best settings to check robustness and analyze failure cases. In other words, extra compute would be used to improve the reliability and breadth of the final ablations, not merely to inflate the raw number of generated images.
+
+\section{Plan}
+The proposal timeline is now updated into a midway-to-final execution plan. The completed midway milestones include dataset download, subset curation, baseline pipeline implementation, automated evaluation, notebook-based visualization, and full 1{,}000-sample baseline runs. The remaining work is concentrated on the final conflict and scheduling experiments.
+
+Hanfei Guo continues to maintain pipeline infrastructure and data handling. Kangjie Lu continues to lead scheduled-control implementation and scheduler ablations. Luyi Miao continues to lead evaluation, figure generation, and statistical analysis. All members jointly review the experimental setup and interpret the results before final writeup.
+
+\textbf{Updated Timeline \& Concrete Milestones:}
+
+\begin{itemize}
+    \item \textbf{Completed by midway:} dataset setup, baseline integration, 1{,}000-image evaluation runs, metric aggregation, and reproducible visualization.
+    \item \textbf{April 14 -- April 18:} finalize the conflict-pairing protocol and complete the naive combined baseline under conflict.
+    \item \textbf{April 18 -- April 23:} run hard-switch and smooth-schedule searches on a smaller conflict subset, then scale the best candidates to a larger evaluation set.
+    \item \textbf{April 23 -- April 27:} produce final qualitative figures, failure-case analysis, and ablation plots for the poster and final report.
+    \item \textbf{April 30:} submit the final executive summary and the complete project codebase.
+\end{itemize}
+
+% References
+\bibliographystyle{plainnat}  % Choose a bibliography style (e.g., plainnat, abbrvnat)
+\bibliography{references}     % Add your .bib file here
+
+% \appendix
+
+% \section{Example Appendix}
+% \label{sec:appendix}
+
+% This is an appendix.
+
+\end{document}

@@ -1,0 +1,17 @@
+{
+  "mode": "smooth_ctrlmax__tau_0p25__sharp_16p0__ip_1p0__ctrl_1p2",
+  "tau": 0.25,
+  "sharpness": 16.0,
+  "control_max_scale": 1.2,
+  "ip_max_scale": 1.0,
+  "canny_mse_mean": 0.17249679565429688,
+  "canny_mse_std": 0.07285327233820468,
+  "canny_mse_median": 0.1674327850341797,
+  "clip_similarity_mean": 0.8112575668096542,
+  "clip_similarity_std": 0.06734495596586827,
+  "clip_similarity_median": 0.8165424168109894,
+  "canny_score": 1.0,
+  "clip_score": 0.6146341103570375,
+  "balanced_score": 0.8073170551785187,
+  "stage": "control_max_scale"
+}

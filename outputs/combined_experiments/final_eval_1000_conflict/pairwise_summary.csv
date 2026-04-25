@@ -1,0 +1,4 @@
+left_mode,right_mode,count,left_canny_better_rate,left_clip_better_rate,canny_delta_right_minus_left_mean,clip_delta_left_minus_right_mean
+tau_0p25,naive_combined,1000,0.082,0.966,-0.0445025634765625,0.1812990663945675
+smooth_sharpness__tau_0p25__sharp_16p0,naive_combined,1000,0.073,0.946,-0.04435089111328125,0.15922913187742233
+smooth_sharpness__tau_0p25__sharp_16p0,tau_0p25,1000,0.485,0.348,0.00015167236328125,-0.022069934517145156

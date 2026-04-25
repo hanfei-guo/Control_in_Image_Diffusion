@@ -1,0 +1,33 @@
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Build metadata
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local data and model assets
+assets/
+
+# Large generated outputs
+outputs/**/images/
+
+# Logs and local monitoring
+*.log
+final_run*.log
+final_monitor.log
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.toc
+*.synctex.gz
+
+# Office temp files
+~$*.pptx
