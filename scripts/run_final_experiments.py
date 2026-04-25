@@ -11,10 +11,12 @@ import pandas as pd
 from midway_project.experiments import build_conflict_manifest, load_manifest
 from midway_project.final_stage import (
     best_improvement_samples,
+    export_control_ip_adapter_comparison,
     export_final_comparison_gallery,
     export_hard_vs_smooth_tau_metrics,
     export_metric_bars,
     export_schedule_overview,
+    export_single_tau_ablation,
     export_smooth_stage_metric_sweep,
     export_tau_sweep_grid,
     export_tradeoff_scatter,
@@ -261,7 +263,8 @@ def main() -> None:
     hard_metrics = pd.read_csv(hard_root / "per_sample_metrics.csv")
     hard_manifest = pd.read_csv(hard_root / "experiment_manifest.csv", dtype={"sample_id": str})
     tau_modes = [hard_mode_name(tau) for tau in tau_values]
-    tau_sample_ids = interesting_tau_samples(hard_metrics, "naive_combined", tau_modes[0], tau_modes[-1], limit=3)
+    tau_candidate_sample_ids = interesting_tau_samples(hard_metrics, "naive_combined", tau_modes[0], tau_modes[-1], limit=6)
+    tau_sample_ids = tau_candidate_sample_ids[:3]
     if tau_sample_ids:
         export_tau_sweep_grid(
             hard_manifest,
@@ -271,7 +274,8 @@ def main() -> None:
             args.figures_dir / "tau_sweep_examples",
         )
 
-    final_sample_ids = best_improvement_samples(metrics, "naive_combined", best_smooth["mode"], limit=3)
+    final_candidate_sample_ids = best_improvement_samples(metrics, "naive_combined", best_smooth["mode"], limit=6)
+    final_sample_ids = final_candidate_sample_ids[:3]
     if final_sample_ids:
         export_final_comparison_gallery(
             final_manifest,
@@ -279,6 +283,22 @@ def main() -> None:
             final_sample_ids,
             ["naive_combined", best_hard["mode"], best_smooth["mode"]],
             args.figures_dir / "final_method_gallery",
+        )
+        export_control_ip_adapter_comparison(
+            final_manifest,
+            final_root,
+            final_sample_ids,
+            ["naive_combined", best_hard["mode"], best_smooth["mode"]],
+            args.figures_dir / "control_ip_adapter_comparison",
+        )
+    tau_ablation_sample_id = tau_sample_ids[0] if tau_sample_ids else None
+    if tau_ablation_sample_id:
+        export_single_tau_ablation(
+            hard_manifest,
+            hard_root,
+            tau_ablation_sample_id,
+            tau_modes,
+            args.figures_dir / "tau_ablation_single",
         )
 
     export_tradeoff_scatter(hard_summary, args.figures_dir / "hard_search_tradeoff", "Hard-switch tau search (conflict subset)")
@@ -315,7 +335,13 @@ def main() -> None:
         json.dumps(
             {
                 "tau_sweep_sample_ids": tau_sample_ids,
+                "tau_sweep_candidate_sample_ids": tau_candidate_sample_ids,
                 "final_gallery_sample_ids": final_sample_ids,
+                "final_gallery_candidate_sample_ids": final_candidate_sample_ids,
+                "control_ip_adapter_sample_ids": final_sample_ids,
+                "control_ip_adapter_candidate_sample_ids": final_candidate_sample_ids,
+                "tau_ablation_sample_id": tau_ablation_sample_id,
+                "tau_ablation_candidate_sample_ids": tau_candidate_sample_ids,
             },
             indent=2,
         ),

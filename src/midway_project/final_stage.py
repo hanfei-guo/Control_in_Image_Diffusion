@@ -292,6 +292,21 @@ def _load_conflict_assets(manifest_row: pd.Series, image_path: Path) -> Image.Im
     return Image.open(image_path).convert("RGB")
 
 
+def _display_mode_title(mode: str) -> str:
+    if mode == "naive_combined":
+        return "Naive combined"
+    if mode.startswith("tau_"):
+        tau = mode.split("_", 1)[1].replace("p", ".")
+        return f"Hard tau={tau}"
+    if mode.startswith("smooth"):
+        tau = _parse_tau_value(mode)
+        if "__sharp_" in mode:
+            sharp = mode.split("__sharp_")[-1].replace("p", ".")
+            return f"Smooth tau={tau:.2f}, sharp={sharp}" if tau is not None else f"Smooth sharp={sharp}"
+        return f"Smooth tau={tau:.2f}" if tau is not None else "Smooth schedule"
+    return mode.replace("_", " ")
+
+
 def export_tau_sweep_grid(
     manifest: pd.DataFrame,
     hard_root: Path,
@@ -302,9 +317,9 @@ def export_tau_sweep_grid(
     columns = ["structure_image", "semantic_image", "naive_combined", *tau_modes]
     title_map = {
         "structure_image": "Structure image",
-        "semantic_image": "Semantic reference",
-        "naive_combined": "Naive",
-        **{mode: mode.replace("_", " ") for mode in tau_modes},
+        "semantic_image": "IP-Adapter reference",
+        "naive_combined": "Naive combined",
+        **{mode: _display_mode_title(mode) for mode in tau_modes},
     }
     fig, axes = plt.subplots(len(sample_ids), len(columns), figsize=(2.2 * len(columns), 2.4 * len(sample_ids)))
     if len(sample_ids) == 1:
@@ -342,9 +357,9 @@ def export_final_comparison_gallery(
 ) -> None:
     columns = ["structure_image", "semantic_image", *modes]
     title_map = {
-        "structure_image": "Structure image",
-        "semantic_image": "Semantic reference",
-        **{mode: mode.replace("_", " ") for mode in modes},
+        "structure_image": "Control image",
+        "semantic_image": "IP-Adapter reference",
+        **{mode: _display_mode_title(mode) for mode in modes},
     }
     fig, axes = plt.subplots(len(sample_ids), len(columns), figsize=(2.6 * len(columns), 2.6 * len(sample_ids)))
     if len(sample_ids) == 1:
@@ -366,6 +381,100 @@ def export_final_comparison_gallery(
             if row_idx == 0:
                 ax.set_title(title_map[key], fontsize=9)
         axes[row_idx, 0].set_ylabel(str(sample_id), fontsize=9, rotation=90)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    for ext in (".png", ".pdf"):
+        fig.savefig(output_path.with_suffix(ext), dpi=220, bbox_inches="tight")
+    plt.close(fig)
+
+
+def export_control_ip_adapter_comparison(
+    manifest: pd.DataFrame,
+    final_root: Path,
+    sample_ids: list[str],
+    modes: list[str],
+    output_path: Path,
+) -> None:
+    columns = ["structure_image", "plus", "semantic_image", "arrow", *modes]
+    title_map = {
+        "structure_image": "Control image",
+        "plus": "",
+        "semantic_image": "IP-Adapter reference",
+        "arrow": "",
+        **{mode: _display_mode_title(mode) for mode in modes},
+    }
+    width_ratios = [1.0, 0.18, 1.0, 0.22, *([1.0] * len(modes))]
+    fig, axes = plt.subplots(
+        len(sample_ids),
+        len(columns),
+        figsize=(2.2 * sum(width_ratios), 2.35 * len(sample_ids)),
+        gridspec_kw={"width_ratios": width_ratios},
+    )
+    if len(sample_ids) == 1:
+        axes = np.array([axes])
+    for row_idx, sample_id in enumerate(sample_ids):
+        manifest_row = manifest.loc[manifest["sample_id"] == sample_id].iloc[0]
+        payload: list[object] = [
+            _load_conflict_assets(manifest_row, Path(manifest_row["structure_image_path"])),
+            "+",
+            _load_conflict_assets(manifest_row, Path(manifest_row["semantic_image_path"])),
+            "\u2192",
+        ]
+        for mode in modes:
+            payload.append(Image.open(final_root / mode / "images" / f"{sample_id}.png").convert("RGB"))
+        for ax, key, item in zip(axes[row_idx], columns, payload):
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
+            if isinstance(item, str):
+                ax.axis("off")
+                ax.text(0.5, 0.5, item, ha="center", va="center", fontsize=20, fontweight="bold")
+            else:
+                ax.imshow(item)
+            if row_idx == 0:
+                ax.set_title(title_map[key], fontsize=10)
+        axes[row_idx, 0].set_ylabel(str(sample_id), fontsize=9, rotation=90)
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    for ext in (".png", ".pdf"):
+        fig.savefig(output_path.with_suffix(ext), dpi=220, bbox_inches="tight")
+    plt.close(fig)
+
+
+def export_single_tau_ablation(
+    manifest: pd.DataFrame,
+    hard_root: Path,
+    sample_id: str,
+    tau_modes: list[str],
+    output_path: Path,
+) -> None:
+    manifest_row = manifest.loc[manifest["sample_id"] == sample_id].iloc[0]
+    columns = ["structure_image", "semantic_image", "naive_combined", *tau_modes]
+    title_map = {
+        "structure_image": "Control image",
+        "semantic_image": "IP-Adapter reference",
+        "naive_combined": "Naive combined",
+        **{mode: _display_mode_title(mode) for mode in tau_modes},
+    }
+    images: list[Image.Image] = [
+        _load_conflict_assets(manifest_row, Path(manifest_row["structure_image_path"])),
+        _load_conflict_assets(manifest_row, Path(manifest_row["semantic_image_path"])),
+        Image.open(hard_root / "naive_combined" / "images" / f"{sample_id}.png").convert("RGB"),
+    ]
+    for mode in tau_modes:
+        images.append(Image.open(hard_root / mode / "images" / f"{sample_id}.png").convert("RGB"))
+    fig, axes = plt.subplots(1, len(columns), figsize=(2.25 * len(columns), 2.9))
+    if len(columns) == 1:
+        axes = np.array([axes])
+    for ax, key, image in zip(axes, columns, images):
+        ax.imshow(image)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        ax.set_title(title_map[key], fontsize=9)
+    fig.suptitle(f"Single-pair tau ablation: {sample_id}", fontsize=12)
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     for ext in (".png", ".pdf"):
@@ -475,21 +584,22 @@ def export_schedule_overview(
     fig, axes = plt.subplots(2, 2, figsize=(12, 8))
 
     hard_ax = axes[0, 0]
-    hard_control = np.where(progress < reference_tau, control_max_scale, 0.0)
-    hard_semantic = np.where(progress < reference_tau, 0.0, ip_max_scale)
-    hard_ax.step(progress, hard_control, where="post", color="#4C72B0", linewidth=2.5, label="Control weight")
-    hard_ax.step(progress, hard_semantic, where="post", color="#C44E52", linewidth=2.5, label="Semantic weight")
+    hard_control = np.where(progress < reference_tau, 1.0, 0.0)
+    hard_semantic = np.where(progress < reference_tau, 0.0, 1.0)
+    hard_ax.step(progress, hard_control, where="post", color="#4C72B0", linewidth=2.5, label="Normalized control weight")
+    hard_ax.step(progress, hard_semantic, where="post", color="#C44E52", linewidth=2.5, label="Normalized semantic weight")
     hard_ax.axvline(reference_tau, color="black", linestyle="--", linewidth=1)
     hard_ax.text(reference_tau + 0.01, 0.92, r"$\tau$", fontsize=10)
     hard_ax.set_title("Hard switch")
-    hard_ax.set_ylabel("Conditioning weight")
+    hard_ax.set_ylabel("Normalized weight")
     hard_ax.legend(frameon=False, loc="center right")
 
     smooth_ax = axes[0, 1]
-    smooth_control = [control_weight(t, reference_tau, reference_sharpness, control_max_scale) for t in progress]
-    smooth_semantic = [semantic_weight(t, reference_tau, reference_sharpness, ip_max_scale) for t in progress]
-    smooth_ax.plot(progress, smooth_control, color="#4C72B0", linewidth=2.5, label="Control weight")
-    smooth_ax.plot(progress, smooth_semantic, color="#C44E52", linewidth=2.5, label="Semantic weight")
+    smooth_sigmoid = [semantic_weight(t, reference_tau, reference_sharpness, 1.0) for t in progress]
+    smooth_control = [1.0 - value for value in smooth_sigmoid]
+    smooth_semantic = smooth_sigmoid
+    smooth_ax.plot(progress, smooth_control, color="#4C72B0", linewidth=2.5, label="Normalized control weight")
+    smooth_ax.plot(progress, smooth_semantic, color="#C44E52", linewidth=2.5, label="Normalized semantic weight")
     smooth_ax.axvline(reference_tau, color="black", linestyle="--", linewidth=1)
     smooth_ax.text(reference_tau + 0.01, 0.92, r"$\tau$", fontsize=10)
     smooth_ax.set_title(f"Smooth switch (tau={reference_tau:.2f}, sharpness={reference_sharpness:g})")
@@ -498,24 +608,24 @@ def export_schedule_overview(
     tau_ax = axes[1, 0]
     tau_colors = plt.cm.Blues(np.linspace(0.45, 0.85, len(tau_examples)))
     for color, tau in zip(tau_colors, tau_examples):
-        curve = [semantic_weight(t, tau, reference_sharpness, ip_max_scale) for t in progress]
+        curve = [semantic_weight(t, tau, reference_sharpness, 1.0) for t in progress]
         tau_ax.plot(progress, curve, color=color, linewidth=2.3, label=f"tau={tau:.2f}")
         tau_ax.axvline(tau, color=color, linestyle="--", linewidth=0.9, alpha=0.7)
-    tau_ax.set_title("Effect of tau")
+    tau_ax.set_title("Effect of tau (normalized semantic weight)")
     tau_ax.set_xlabel("Denoising progress (0 = pure noise, 1 = clean image)")
-    tau_ax.set_ylabel("Semantic weight")
+    tau_ax.set_ylabel("Normalized semantic weight")
     tau_ax.legend(frameon=False, loc="best")
 
     sharp_ax = axes[1, 1]
     sharp_colors = plt.cm.Oranges(np.linspace(0.45, 0.85, len(sharpness_examples)))
     for color, sharpness in zip(sharp_colors, sharpness_examples):
-        curve = [semantic_weight(t, reference_tau, sharpness, ip_max_scale) for t in progress]
+        curve = [semantic_weight(t, reference_tau, sharpness, 1.0) for t in progress]
         sharp_ax.plot(progress, curve, color=color, linewidth=2.3, label=f"sharpness={sharpness:g}")
     sharp_ax.axvline(reference_tau, color="black", linestyle="--", linewidth=1)
     sharp_ax.text(reference_tau + 0.01, 0.92, r"$\tau$", fontsize=10)
-    sharp_ax.set_title("Effect of sharpness")
+    sharp_ax.set_title("Effect of sharpness (normalized semantic weight)")
     sharp_ax.set_xlabel("Denoising progress (0 = pure noise, 1 = clean image)")
-    sharp_ax.set_ylabel("Semantic weight")
+    sharp_ax.set_ylabel("Normalized semantic weight")
     sharp_ax.legend(frameon=False, loc="best")
 
     for ax in axes.ravel():
@@ -524,7 +634,7 @@ def export_schedule_overview(
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
-    fig.suptitle("Time-step scheduling overview", fontsize=14)
+    fig.suptitle("Normalized time-step scheduling overview", fontsize=14)
     fig.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     for ext in (".png", ".pdf"):

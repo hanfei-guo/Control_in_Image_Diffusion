@@ -86,6 +86,8 @@ Final-stage figures:
 - `figures/final_stage/hard_vs_smooth_tau_metrics.png`
 - `figures/final_stage/smooth_sharpness_metrics.png`
 - `figures/final_stage/final_method_bars.png`
+- `figures/final_stage/control_ip_adapter_comparison.png`
+- `figures/final_stage/tau_ablation_single.png`
 - `figures/final_stage/tau_sweep_examples.png`
 - `figures/final_stage/final_method_gallery.png`
 
@@ -104,7 +106,7 @@ GitHub can render repository images directly inside the README, so the most impo
 </p>
 
 <p align="center">
-  <em>Time-step scheduling overview. Hard switch uses a step function at <code>tau</code>; smooth scheduling replaces the step with a sigmoid transition. <code>tau</code> shifts the crossover point in time, while <code>sharpness</code> controls how abrupt the transition is around that point.</em>
+  <em>Time-step scheduling overview. Hard switch uses a step function at <code>tau</code>; smooth scheduling replaces the step with a sigmoid transition. In this normalized illustration, <code>tau</code> marks the transition center in time, while <code>sharpness</code> controls how abrupt the transition is around that center.</em>
 </p>
 
 <p align="center">
@@ -121,6 +123,22 @@ GitHub can render repository images directly inside the README, so the most impo
 
 <p align="center">
   <em>Full-set comparison on 1,000 conflict pairs. Lower Canny Edge MSE means better structure preservation; higher CLIP similarity means better semantic alignment.</em>
+</p>
+
+<p align="center">
+  <img src="figures/final_stage/control_ip_adapter_comparison.png" alt="Control plus IP-Adapter slide-ready examples" width="920">
+</p>
+
+<p align="center">
+  <em>Slide-ready qualitative comparison. Each row pairs one control image with one IP-Adapter reference, then compares the outputs from naive combined control, the best hard switch, and the best smooth schedule.</em>
+</p>
+
+<p align="center">
+  <img src="figures/final_stage/tau_ablation_single.png" alt="Single-pair tau ablation" width="920">
+</p>
+
+<p align="center">
+  <em>Single-pair tau ablation. For one fixed conflict pair, moving <code>tau</code> later preserves more structure, while moving it earlier allows stronger semantic takeover.</em>
 </p>
 
 <p align="center">
@@ -148,6 +166,32 @@ Pairwise comparison against `naive_combined`:
 - `smooth_sharpness__tau_0p25__sharp_16p0` wins on CLIP similarity for `94.6%` of samples, but wins on Canny MSE for only `7.3%`
 
 This means the final experiments expose a clear structure / semantics trade-off rather than a schedule that dominates both objectives at once.
+
+## Suggested Sample IDs For Slides
+
+Current slide-ready `Control + IP-Adapter -> Outputs` rows:
+
+- `000000295420__000000318080`
+- `000000203639__000000319184`
+- `000000002299__000000079188`
+
+Additional candidate rows:
+
+- `000000163117__000000077595`
+- `000000137950__000000473219`
+- `000000463199__000000148957`
+
+Current single-pair `tau` ablation example:
+
+- `000000179141__000000507223`
+
+Additional `tau` ablation candidates:
+
+- `000000036539__000000050828`
+- `000000131431__000000002473`
+- `000000557501__000000179285`
+- `000000213547__000000357567`
+- `000000241602__000000165518`
 
 ## Repository Layout
 

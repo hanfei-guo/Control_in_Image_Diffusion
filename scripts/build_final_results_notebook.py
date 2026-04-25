@@ -83,7 +83,7 @@ def main() -> None:
             "if (FIGURES_DIR / 'schedule_overview.png').exists():\n"
             "    display(Markdown('### Time-Step Scheduling Overview'))\n"
             "    display(Image(filename=str(FIGURES_DIR / 'schedule_overview.png')))\n"
-            "    display(Markdown('Suggested caption: hard switch uses a step function at tau, while smooth scheduling replaces the step with a sigmoid transition. Tau shifts the crossover point in time; sharpness controls how abrupt the transition is around tau.'))"
+            "    display(Markdown('Suggested caption: hard switch uses a step function at tau, while smooth scheduling replaces the step with a sigmoid transition. In the normalized illustration, tau marks the transition center in time, while sharpness controls how abrupt the transition is around that center.'))"
         )
     )
 
@@ -137,21 +137,37 @@ def main() -> None:
     cells.append(
         nbf.v4.new_markdown_cell(
             "## 4. Qualitative Comparisons\n"
-            "The first qualitative figure is the tau sweep requested by the teammate discussion. It fixes several conflict pairs and lays different switch points side by side. The second figure compares the final selected methods directly."
+            "This section contains both slide-ready figures requested by the teammate discussion and the broader qualitative grids used for the report."
         )
     )
 
     cells.append(
         nbf.v4.new_code_cell(
+            "if (FIGURES_DIR / 'control_ip_adapter_comparison.png').exists():\n"
+            "    display(Markdown('### Control + IP-Adapter -> Outputs'))\n"
+            "    display(Markdown(f\"Recommended sample IDs: {recommended_samples.get('control_ip_adapter_sample_ids', [])}\"))\n"
+            "    display(Markdown(f\"Additional candidate IDs: {recommended_samples.get('control_ip_adapter_candidate_sample_ids', [])}\"))\n"
+            "    display(Image(filename=str(FIGURES_DIR / 'control_ip_adapter_comparison.png')))\n"
+            "    display(Markdown('Suggested caption: each row pairs one control image with one IP-Adapter reference, then compares the resulting outputs from naive combined control, the best hard switch, and the best smooth schedule.'))\n"
+            "\n"
+            "if (FIGURES_DIR / 'tau_ablation_single.png').exists():\n"
+            "    display(Markdown('### Single-Pair Tau Ablation'))\n"
+            "    display(Markdown(f\"Recommended sample ID: {recommended_samples.get('tau_ablation_sample_id', 'N/A')}\"))\n"
+            "    display(Markdown(f\"Additional candidate IDs: {recommended_samples.get('tau_ablation_candidate_sample_ids', [])}\"))\n"
+            "    display(Image(filename=str(FIGURES_DIR / 'tau_ablation_single.png')))\n"
+            "    display(Markdown('Suggested caption: for one fixed conflict pair, moving tau later preserves more structure, while moving tau earlier allows stronger semantic takeover.'))\n"
+            "\n"
             "if (FIGURES_DIR / 'tau_sweep_examples.png').exists():\n"
             "    display(Markdown('### Tau Sweep Examples'))\n"
             "    display(Markdown(f\"Recommended sample IDs: {recommended_samples.get('tau_sweep_sample_ids', [])}\"))\n"
+            "    display(Markdown(f\"Additional candidate IDs: {recommended_samples.get('tau_sweep_candidate_sample_ids', [])}\"))\n"
             "    display(Image(filename=str(FIGURES_DIR / 'tau_sweep_examples.png')))\n"
             "    display(Markdown('Suggested caption: varying the switch point changes whether the model preserves more structure or more semantic appearance on the same conflict pair.'))\n"
             "\n"
             "if (FIGURES_DIR / 'final_method_gallery.png').exists():\n"
             "    display(Markdown('### Final Method Gallery'))\n"
             "    display(Markdown(f\"Recommended sample IDs: {recommended_samples.get('final_gallery_sample_ids', [])}\"))\n"
+            "    display(Markdown(f\"Additional candidate IDs: {recommended_samples.get('final_gallery_candidate_sample_ids', [])}\"))\n"
             "    display(Image(filename=str(FIGURES_DIR / 'final_method_gallery.png')))\n"
             "    display(Markdown('Suggested caption: final qualitative comparison between naive combined control and the selected scheduled methods. Use these examples to discuss artifacts, wrong colors, or cases where scheduling improves the trade-off.'))"
         )
@@ -166,10 +182,12 @@ def main() -> None:
             "3. `hard_vs_smooth_tau_metrics.png`: compare hard and smooth schedules at matched tau values.\n"
             "4. `smooth_sharpness_metrics.png`: show how the sharpness hyperparameter changes the compromise.\n"
             "5. `final_method_bars.png`: main quantitative comparison on the full evaluation set.\n"
-            "6. `tau_sweep_examples.png`: visually explain what changing the transition point actually does.\n"
-            "7. `final_method_gallery.png`: qualitative evidence for the final selected methods.\n"
+            "6. `control_ip_adapter_comparison.png`: slide-ready control + reference -> output examples.\n"
+            "7. `tau_ablation_single.png`: single-pair ablation over different tau values.\n"
+            "8. `tau_sweep_examples.png`: broader qualitative explanation of what changing the transition point does.\n"
+            "9. `final_method_gallery.png`: qualitative evidence for the final selected methods.\n"
             "\n"
-            "If the report is space-constrained, keep figures 1, 3, 5, 6, and 7, and compress figures 2 and 4 into one smaller appendix panel."
+            "If the report is space-constrained, keep figures 1, 3, 5, 6, and 7, and compress figures 2, 4, 8, and 9 into appendix material."
         )
     )
 
