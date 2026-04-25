@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import torch
@@ -13,6 +14,13 @@ from diffusers.models.controlnets.multicontrolnet import MultiControlNetModel
 from huggingface_hub import snapshot_download
 
 from .settings import MODEL_SPECS
+
+
+def stabilize_hf_loading() -> None:
+    # Windows + transformers async tensor materialization is intermittently unstable
+    # for the IP-Adapter image encoder in fresh processes.
+    if os.name == "nt":
+        os.environ.setdefault("HF_DEACTIVATE_ASYNC_LOAD", "1")
 
 
 def detect_device() -> str:
@@ -82,6 +90,7 @@ def build_ip_adapter_pipeline(
     dtype: torch.dtype,
     ip_adapter_scale: float,
 ):
+    stabilize_hf_loading()
     pipe = StableDiffusionPipeline.from_pretrained(
         str(base_model_dir),
         torch_dtype=dtype,
@@ -98,6 +107,7 @@ def build_ip_adapter_pipeline(
         weight_name="ip-adapter_sd15.safetensors",
         image_encoder_folder="image_encoder",
         local_files_only=True,
+        low_cpu_mem_usage=False,
     )
     pipe.set_ip_adapter_scale(ip_adapter_scale)
     pipe.to(device)
@@ -112,6 +122,7 @@ def build_combined_pipeline(
     dtype: torch.dtype,
     ip_adapter_scale: float,
 ):
+    stabilize_hf_loading()
     controlnet = ControlNetModel.from_pretrained(
         str(controlnet_dir),
         torch_dtype=dtype,
@@ -136,6 +147,7 @@ def build_combined_pipeline(
         weight_name="ip-adapter_sd15.safetensors",
         image_encoder_folder="image_encoder",
         local_files_only=True,
+        low_cpu_mem_usage=False,
     )
     pipe.set_ip_adapter_scale(ip_adapter_scale)
     pipe.to(device)
@@ -151,6 +163,7 @@ def build_smooth_combined_pipeline(
     ip_adapter_scale: float,
     control_segments: int,
 ):
+    stabilize_hf_loading()
     controlnet = ControlNetModel.from_pretrained(
         str(controlnet_dir),
         torch_dtype=dtype,
@@ -176,6 +189,7 @@ def build_smooth_combined_pipeline(
         weight_name="ip-adapter_sd15.safetensors",
         image_encoder_folder="image_encoder",
         local_files_only=True,
+        low_cpu_mem_usage=False,
     )
     pipe.set_ip_adapter_scale(ip_adapter_scale)
     pipe.to(device)
