@@ -86,9 +86,8 @@ Final-stage figures:
 - `figures/final_stage/hard_vs_smooth_tau_metrics.png`
 - `figures/final_stage/smooth_sharpness_metrics.png`
 - `figures/final_stage/final_method_bars.png`
-- `figures/final_stage/control_ip_adapter_comparison.png`
-- `figures/final_stage/tau_ablation_single.png`
-- `figures/final_stage/tau_sweep_examples.png`
+- `figures/final_stage/selected_slide_cases_curated/comparisons/`
+- `figures/final_stage/selected_slide_cases_curated/tau_sweeps/`
 - `figures/final_stage/final_method_gallery.png`
 
 Final summary files:
@@ -125,29 +124,88 @@ GitHub can render repository images directly inside the README, so the most impo
   <em>Full-set comparison on 1,000 conflict pairs. Lower Canny Edge MSE means better structure preservation; higher CLIP similarity means better semantic alignment.</em>
 </p>
 
-<p align="center">
-  <img src="figures/final_stage/control_ip_adapter_comparison.png" alt="Control plus IP-Adapter slide-ready examples" width="920">
-</p>
+## Curated Slide Cases
 
-<p align="center">
-  <em>Slide-ready qualitative comparison. Each row pairs one control image with one IP-Adapter reference, then compares the outputs from naive combined control, the best hard switch, and the best smooth schedule.</em>
-</p>
+The slide-case export is now fully hard-coded in [scripts/export_selected_slide_candidates.py](scripts/export_selected_slide_candidates.py). There is no runtime query-resolution logic: the exact `sample_id` for each case is fixed in code, and the README below renders those same curated outputs directly.
 
-<p align="center">
-  <img src="figures/final_stage/tau_ablation_single.png" alt="Single-pair tau ablation" width="920">
-</p>
+For each case:
 
-<p align="center">
-  <em>Single-pair tau ablation. For one fixed conflict pair, moving <code>tau</code> later preserves more structure, while moving it earlier allows stronger semantic takeover.</em>
-</p>
+- `Comparison`: `Edge Map | Image Ref | Naive | Hard (tau=0.25) | Smooth`
+- `Tau Sweep`: `Edge Map | Image Ref | Naive | tau=0.25 | tau=0.40 | tau=0.50 | tau=0.60 | tau=0.75`
 
-<p align="center">
-  <img src="figures/final_stage/tau_sweep_examples.png" alt="Tau sweep qualitative examples" width="920">
-</p>
+### Color Cases
 
-<p align="center">
-  <em>Qualitative tau sweep examples. For the same conflict pair, changing the transition point visibly shifts the output between structural fidelity and semantic appearance.</em>
-</p>
+#### `322895-254516` -> `000000322895__000000254516`
+
+![322895-254516 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/322895-254516.png)
+![322895-254516 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/322895-254516.png)
+
+#### `190923-47010` -> `000000190923__000000047010`
+
+![190923-47010 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/190923-47010.png)
+![190923-47010 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/190923-47010.png)
+
+#### `377575-85157` -> `000000377575__000000085157`
+
+![377575-85157 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/377575-85157.png)
+![377575-85157 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/377575-85157.png)
+
+#### `148730-394940` -> `000000148730__000000394940`
+
+![148730-394940 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/148730-394940.png)
+![148730-394940 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/148730-394940.png)
+
+#### `336232` -> `000000336232__000000109976`
+
+![336232 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/336232.png)
+![336232 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/336232.png)
+
+#### `85682` -> `000000085682__000000187734`
+
+![85682 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/color/85682.png)
+![85682 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/color/85682.png)
+
+### Artifacts / Cleanup Cases
+
+#### `17959-198915` -> `000000017959__000000198915`
+
+![17959-198915 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/17959-198915.png)
+![17959-198915 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/17959-198915.png)
+
+#### `491613` -> `000000491613__000000475191`
+
+![491613 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/491613.png)
+![491613 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/491613.png)
+
+#### `492077` -> `000000492077__000000189226`
+
+![492077 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/492077.png)
+![492077 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/492077.png)
+
+#### `364322` -> `000000364322__000000343934`
+
+![364322 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/364322.png)
+![364322 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/364322.png)
+
+#### `322895` -> `000000322895__000000254516`
+
+![322895 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/322895.png)
+![322895 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/322895.png)
+
+#### `328286` -> `000000328286__000000307145`
+
+![328286 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/328286.png)
+![328286 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/328286.png)
+
+#### `0001993` -> `000000001993__000000050165`
+
+![0001993 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/0001993.png)
+![0001993 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/0001993.png)
+
+#### `476787` -> `000000476787__000000280779`
+
+![476787 comparison](figures/final_stage/selected_slide_cases_curated/comparisons/artifacts_correct/476787.png)
+![476787 tau sweep](figures/final_stage/selected_slide_cases_curated/tau_sweeps/artifacts_correct/476787.png)
 
 ## Current Result Snapshot
 
@@ -166,32 +224,6 @@ Pairwise comparison against `naive_combined`:
 - `smooth_sharpness__tau_0p25__sharp_16p0` wins on CLIP similarity for `94.6%` of samples, but wins on Canny MSE for only `7.3%`
 
 This means the final experiments expose a clear structure / semantics trade-off rather than a schedule that dominates both objectives at once.
-
-## Suggested Sample IDs For Slides
-
-Current slide-ready `Control + IP-Adapter -> Outputs` rows:
-
-- `000000295420__000000318080`
-- `000000203639__000000319184`
-- `000000002299__000000079188`
-
-Additional candidate rows:
-
-- `000000163117__000000077595`
-- `000000137950__000000473219`
-- `000000463199__000000148957`
-
-Current single-pair `tau` ablation example:
-
-- `000000179141__000000507223`
-
-Additional `tau` ablation candidates:
-
-- `000000036539__000000050828`
-- `000000131431__000000002473`
-- `000000557501__000000179285`
-- `000000213547__000000357567`
-- `000000241602__000000165518`
 
 ## Repository Layout
 

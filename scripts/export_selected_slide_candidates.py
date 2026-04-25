@@ -21,24 +21,21 @@ import matplotlib.pyplot as plt
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-DEFAULT_COLOR_QUERIES = (
-    "322895-254516",
-    "190923-47010",
-    "377575-85157",
-    "148730-394940",
-    "336232",
-    "85682",
-)
-
-DEFAULT_ARTIFACT_QUERIES = (
-    "17959-198915",
-    "491613",
-    "492077",
-    "364322",
-    "322895",
-    "328286",
-    "0001993",
-    "476787",
+SELECTED_CASES = (
+    {"category": "color", "query": "322895-254516", "sample_id": "000000322895__000000254516"},
+    {"category": "color", "query": "190923-47010", "sample_id": "000000190923__000000047010"},
+    {"category": "color", "query": "377575-85157", "sample_id": "000000377575__000000085157"},
+    {"category": "color", "query": "148730-394940", "sample_id": "000000148730__000000394940"},
+    {"category": "color", "query": "336232", "sample_id": "000000336232__000000109976"},
+    {"category": "color", "query": "85682", "sample_id": "000000085682__000000187734"},
+    {"category": "artifacts_correct", "query": "17959-198915", "sample_id": "000000017959__000000198915"},
+    {"category": "artifacts_correct", "query": "491613", "sample_id": "000000491613__000000475191"},
+    {"category": "artifacts_correct", "query": "492077", "sample_id": "000000492077__000000189226"},
+    {"category": "artifacts_correct", "query": "364322", "sample_id": "000000364322__000000343934"},
+    {"category": "artifacts_correct", "query": "322895", "sample_id": "000000322895__000000254516"},
+    {"category": "artifacts_correct", "query": "328286", "sample_id": "000000328286__000000307145"},
+    {"category": "artifacts_correct", "query": "0001993", "sample_id": "000000001993__000000050165"},
+    {"category": "artifacts_correct", "query": "476787", "sample_id": "000000476787__000000280779"},
 )
 
 
@@ -77,41 +74,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--ip-adapter-scale", type=float, default=0.8)
     return parser
 
-
-def normalize_query(query: str) -> list[str]:
-    canonical = query.replace("——", "-").replace("__", "-").replace(" ", "")
-    return [part for part in canonical.split("-") if part]
-
-
-def resolve_queries(manifest: pd.DataFrame, queries: list[str], category: str) -> pd.DataFrame:
+def selected_cases_dataframe(manifest: pd.DataFrame) -> pd.DataFrame:
     rows: list[dict[str, str]] = []
-    for query in queries:
-        parts = normalize_query(query)
-        if len(parts) == 2:
-            structure_id = parts[0].zfill(12)
-            semantic_id = parts[1].zfill(12)
-            matches = manifest.loc[
-                (manifest["structure_sample_id"] == structure_id) & (manifest["semantic_sample_id"] == semantic_id)
-            ].copy()
-            resolution_type = "exact_pair"
-        else:
-            structure_id = parts[0].zfill(12)
-            matches = manifest.loc[manifest["structure_sample_id"] == structure_id].copy()
-            resolution_type = "structure_id_only"
-
+    for case in SELECTED_CASES:
+        matches = manifest.loc[manifest["sample_id"] == case["sample_id"]].copy()
         if matches.empty:
-            raise ValueError(f"Could not resolve query '{query}' with the clarified structure-id rule.")
-        if len(matches) != 1:
-            raise ValueError(
-                f"Query '{query}' resolved to {len(matches)} rows under the clarified structure-id rule; expected 1."
-            )
-
+            raise ValueError(f"Hard-coded sample_id '{case['sample_id']}' was not found in the final manifest.")
         match = matches.iloc[0]
         rows.append(
             {
-                "category": category,
-                "query": query,
-                "resolution_type": resolution_type,
+                "category": case["category"],
+                "query": case["query"],
+                "resolution_type": "hardcoded_sample_id",
                 "sample_id": match["sample_id"],
                 "structure_sample_id": match["structure_sample_id"],
                 "semantic_sample_id": match["semantic_sample_id"],
@@ -216,9 +190,8 @@ def build_notebook(
     cells = [
         nbf.v4.new_markdown_cell(
             "# Selected Slide Cases\n"
-            "This notebook shows the curated 14-query export only. "
-            "Each query resolves to exactly one conflict pair under the clarified rule: "
-            "a single number means the structure image id (the left side of the sample id)."
+            "This notebook shows the curated 14-case export only. "
+            "The sample ids are hard-coded in the export script, so there is no runtime query-resolution rule."
         ),
         nbf.v4.new_code_cell(
             "from pathlib import Path\n"
@@ -294,9 +267,7 @@ def main() -> None:
     smooth_mode = selected_modes["best_smooth_mode"]
     tau_values = list(DEFAULT_TAU_CANDIDATES)
 
-    color_selected = resolve_queries(final_manifest, list(DEFAULT_COLOR_QUERIES), "color")
-    artifact_selected = resolve_queries(final_manifest, list(DEFAULT_ARTIFACT_QUERIES), "artifacts_correct")
-    selected = pd.concat([color_selected, artifact_selected], ignore_index=True)
+    selected = selected_cases_dataframe(final_manifest)
 
     selected_csv = args.output_root / "selected_cases_resolution.csv"
     selected_json = args.output_root / "selected_cases_resolution.json"
