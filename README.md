@@ -95,6 +95,9 @@ Final summary files:
 - `outputs/combined_experiments/final_eval_1000_conflict/search_summary.csv`
 - `outputs/combined_experiments/final_eval_1000_conflict/pairwise_summary.csv`
 - `outputs/combined_experiments/final_eval_1000_conflict/per_sample_metrics.csv`
+- `outputs/combined_experiments/final_eval_1000_conflict_extended/search_summary.csv`
+- `outputs/combined_experiments/final_eval_1000_conflict_extended/pairwise_summary.csv`
+- `outputs/combined_experiments/final_eval_1000_conflict_extended/per_sample_metrics.csv`
 
 ## Visual Summary
 
@@ -146,7 +149,7 @@ The slide-case export is now fully hard-coded in [scripts/export_selected_slide_
 
 For each case:
 
-- `Comparison`: `Edge Map | Image Ref | Naive | Hard (tau=0.25) | Smooth`
+- `Comparison`: `Edge Map | Image Ref | Naive | Hard (tau=0.5) | Smooth (tau=0.5)`
 - `Tau Sweep`: `Edge Map | Image Ref | Naive | tau=0.25 | tau=0.40 | tau=0.50 | tau=0.60 | tau=0.75`
 
 ### Color Cases
@@ -225,21 +228,37 @@ For each case:
 
 ## Current Result Snapshot
 
+The numbers below come from the full-set confirmations, not from the earlier `100`-pair hard/smooth search figures. The search plots are for tuning and trend visualization; the snapshot below is for final comparison across the methods that were actually confirmed on the full conflict set.
+
 Final full-set comparison on `1000` conflict pairs:
 
 - `naive_combined`: best structure  
   `Canny MSE mean = 0.1375`, `CLIP similarity mean = 0.6382`
 - `tau_0p25`: best semantics  
   `Canny MSE mean = 0.1820`, `CLIP similarity mean = 0.8195`
+- `tau_0p5`: intermediate hard-switch operating point on the full set  
+  `Canny MSE mean = 0.1694`, `CLIP similarity mean = 0.7219`
 - `smooth_sharpness__tau_0p25__sharp_16p0`: slightly smoother compromise than hard scheduling at the same `tau`, but not a Pareto improvement over the hard result  
   `Canny MSE mean = 0.1818`, `CLIP similarity mean = 0.7974`
 
 Pairwise comparison against `naive_combined`:
 
 - `tau_0p25` wins on CLIP similarity for `96.6%` of samples, but wins on Canny MSE for only `8.2%`
+- `tau_0p5` wins on CLIP similarity for `79.8%` of samples, but wins on Canny MSE for only `11.0%`
 - `smooth_sharpness__tau_0p25__sharp_16p0` wins on CLIP similarity for `94.6%` of samples, but wins on Canny MSE for only `7.3%`
 
-This means the final experiments expose a clear structure / semantics trade-off rather than a schedule that dominates both objectives at once.
+Cross-checks between the scheduled methods:
+
+- `tau_0p5` beats `tau_0p25` on Canny MSE for `62.1%` of samples, but beats it on CLIP similarity for only `8.1%`
+- `smooth_sharpness__tau_0p25__sharp_16p0` beats `tau_0p5` on CLIP similarity for `86.4%` of samples, but beats it on Canny MSE for only `35.8%`
+
+This means the final experiments expose a clear structure / semantics trade-off rather than a schedule that dominates both objectives at once. The added `tau_0p5` full-set run behaves as an intermediate operating point, not as a new Pareto-dominant solution.
+
+Smooth-schedule note:
+
+- `figures/final_stage/smooth_search_tradeoff.png` is the search-stage plot from the `100`-pair smooth search subset. It already summarizes the progressive sweep over `tau`, `sharpness`, `ip_max_scale`, and `control_max_scale`.
+- `figures/final_stage/smooth_sharpness_metrics.png` is the dedicated sharpness ablation plot from that same smooth search.
+- The later `tau_0p5` run was a full-set hard-switch confirmation only, so it does not regenerate a new smooth-search figure by itself.
 
 ## Repository Layout
 

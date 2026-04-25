@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from pathlib import Path
 
 import matplotlib
@@ -10,16 +11,25 @@ import pandas as pd
 from PIL import Image
 
 from midway_project.experiments import evaluate_outputs
-from midway_project.final_stage import generate_hard_modes, hard_mode_name
+from midway_project.final_stage import generate_hard_modes, generate_smooth_modes, hard_mode_name
 from midway_project.models import detect_device
 from midway_project.reporting import save_metrics
-from midway_project.settings import DEFAULT_TAU_CANDIDATES, GenerationConfig
+from midway_project.settings import DEFAULT_SMOOTH_CONTROL_SEGMENTS, DEFAULT_TAU_CANDIDATES, GenerationConfig
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+COMPARISON_HARD_MODE = "tau_0p5"
+COMPARISON_SMOOTH_MODE = "smooth_tau__tau_0p5"
+COMPARISON_SMOOTH_CONFIG = {
+    "mode": COMPARISON_SMOOTH_MODE,
+    "tau": 0.5,
+    "sharpness": 12.0,
+    "control_max_scale": 1.0,
+    "ip_max_scale": 0.8,
+}
 
 SELECTED_CASES = (
     {"category": "color", "sample_id": "000000322895__000000254516"},
@@ -66,12 +76,18 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=PROJECT_ROOT / "notebooks" / "selected_slide_cases.ipynb",
     )
+    parser.add_argument(
+        "--hard-source-root",
+        type=Path,
+        default=PROJECT_ROOT / "outputs" / "combined_experiments" / "final_eval_1000_conflict_tau_0p5_reuse_naive",
+    )
     parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--seed", type=int, default=10623)
     parser.add_argument("--num-inference-steps", type=int, default=30)
     parser.add_argument("--guidance-scale", type=float, default=7.5)
     parser.add_argument("--controlnet-scale", type=float, default=1.0)
     parser.add_argument("--ip-adapter-scale", type=float, default=0.8)
+    parser.add_argument("--control-segments", type=int, default=DEFAULT_SMOOTH_CONTROL_SEGMENTS)
     return parser
 
 
@@ -111,10 +127,55 @@ def mode_label(mode: str) -> str:
     if mode == "naive_combined":
         return "Naive"
     if mode.startswith("tau_"):
-        return f"Hard ({mode.replace('tau_', 'tau=')})"
+        tau_token = mode.split("_", 1)[1].replace("p", ".")
+        return f"Hard (tau={tau_token})"
     if mode.startswith("smooth"):
+        if "tau__tau_" in mode:
+            tau_token = mode.split("tau__tau_", 1)[1].split("__", 1)[0].replace("p", ".")
+            return f"Smooth (tau={tau_token})"
         return "Smooth"
     return mode
+
+
+def ensure_hard_mode_images(
+    selected_manifest: pd.DataFrame,
+    destination_root: Path,
+    hard_source_root: Path,
+    hard_mode: str,
+) -> None:
+    destination_dir = destination_root / hard_mode / "images"
+    destination_dir.mkdir(parents=True, exist_ok=True)
+    source_dir = hard_source_root / hard_mode / "images"
+    if not source_dir.exists():
+        raise FileNotFoundError(f"Hard-mode source directory not found: {source_dir}")
+    for sample_id in selected_manifest["sample_id"].tolist():
+        source = source_dir / f"{sample_id}.png"
+        if not source.exists():
+            raise FileNotFoundError(f"Missing hard tau=0.5 image: {source}")
+        target = destination_dir / source.name
+        if not target.exists():
+            shutil.copy2(source, target)
+
+
+def ensure_smooth_mode_images(
+    selected_manifest: pd.DataFrame,
+    destination_root: Path,
+    smooth_mode: str,
+    cfg: GenerationConfig,
+    device: str,
+    control_segments: int,
+) -> None:
+    output_dirs = {smooth_mode: destination_root / smooth_mode / "images"}
+    output_dirs[smooth_mode].mkdir(parents=True, exist_ok=True)
+    generate_smooth_modes(
+        selected_manifest,
+        output_dirs,
+        [COMPARISON_SMOOTH_CONFIG],
+        cfg,
+        device,
+        resume=True,
+        control_segments=control_segments,
+    )
 
 
 def make_comparison_figure(row: pd.Series, final_root: Path, hard_mode: str, smooth_mode: str, output_base: Path) -> None:
@@ -209,8 +270,8 @@ def build_notebook(
         nbf.v4.new_markdown_cell(
             "## Reading Guide\n"
             "- `Naive` means all controls are active throughout denoising.\n"
-            f"- `{mode_label(hard_mode)}` is the selected hard-switch schedule.\n"
-            f"- `{mode_label(smooth_mode)}` is the selected smooth schedule.\n"
+            f"- `{mode_label(hard_mode)}` is the curated hard comparison used in the first row figure.\n"
+            f"- `{mode_label(smooth_mode)}` is the curated smooth comparison used in the first row figure.\n"
             "- The tau sweep row keeps the same pair fixed and only varies the hard-switch threshold."
         ),
     ]
@@ -252,15 +313,15 @@ def main() -> None:
     args.output_root = args.output_root.resolve()
     args.figures_root = args.figures_root.resolve()
     args.output_notebook = args.output_notebook.resolve()
+    args.hard_source_root = args.hard_source_root.resolve()
     args.output_root.mkdir(parents=True, exist_ok=True)
 
     final_manifest = pd.read_csv(
         args.final_root / "experiment_manifest.csv",
         dtype={"sample_id": str, "structure_sample_id": str, "semantic_sample_id": str},
     )
-    selected_modes = json.loads((args.final_root / "selected_modes.json").read_text(encoding="utf-8"))
-    hard_mode = selected_modes["best_hard_mode"]
-    smooth_mode = selected_modes["best_smooth_mode"]
+    hard_mode = COMPARISON_HARD_MODE
+    smooth_mode = COMPARISON_SMOOTH_MODE
     tau_values = list(DEFAULT_TAU_CANDIDATES)
 
     selected = selected_cases_dataframe(final_manifest)
@@ -280,10 +341,16 @@ def main() -> None:
     device = args.device or detect_device()
 
     subset_manifest = final_manifest.loc[final_manifest["sample_id"].isin(selected["sample_id"].tolist())].copy()
+    ensure_hard_mode_images(subset_manifest, args.final_root, args.hard_source_root, hard_mode)
+    ensure_smooth_mode_images(subset_manifest, args.final_root, smooth_mode, cfg, device, args.control_segments)
+
     output_dirs = ensure_output_dirs(args.ablation_root, tau_values)
     generate_hard_modes(subset_manifest, output_dirs, tau_values, cfg, device, resume=True)
 
-    metrics = evaluate_outputs(subset_manifest, output_dirs, device)
+    curated_output_dirs = dict(output_dirs)
+    curated_output_dirs[hard_mode] = args.final_root / hard_mode / "images"
+    curated_output_dirs[smooth_mode] = args.final_root / smooth_mode / "images"
+    metrics = evaluate_outputs(subset_manifest, curated_output_dirs, device)
     per_sample_csv = args.output_root / "per_sample_metrics.csv"
     summary_json = args.output_root / "summary.json"
     save_metrics(metrics, per_sample_csv, summary_json)
