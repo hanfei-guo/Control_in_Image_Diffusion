@@ -124,7 +124,7 @@ GitHub can render repository images directly inside the README, so the most impo
 </p>
 
 <p align="center">
-  <em>Smooth-schedule search on the conflict subset. The plot shows how changing <code>tau</code>, <code>sharpness</code>, and scale settings moves the method along the same structure-versus-semantics frontier.</em>
+  <em>Smooth-schedule search on the conflict subset. This updated plot combines the original smooth-search grid with the later <code>tau=0.5</code> follow-up search, so the added <code>sharpness</code>, <code>ip_max_scale</code>, and <code>control_max_scale</code> probes at <code>tau=0.5</code> can be read on the same structure-versus-semantics frontier.</em>
 </p>
 
 <p align="center">
@@ -241,6 +241,8 @@ Final full-set comparison on `1000` conflict pairs:
 - `smooth_sharpness__tau_0p25__sharp_16p0`: slightly smoother compromise than hard scheduling at the same `tau`, but not a Pareto improvement over the hard result  
   `Canny MSE mean = 0.1818`, `CLIP similarity mean = 0.7974`
 
+We also include a separate `smooth tau=0.5` search-stage result below. It is useful for comparing operating points, but it is still a `100`-pair subset result rather than a `1000`-pair full-set confirmation.
+
 Pairwise comparison against `naive_combined`:
 
 - `tau_0p25` wins on CLIP similarity for `96.6%` of samples, but wins on Canny MSE for only `8.2%`
@@ -256,9 +258,9 @@ This means the final experiments expose a clear structure / semantics trade-off 
 
 Smooth-schedule note:
 
-- `figures/final_stage/smooth_search_tradeoff.png` is the search-stage plot from the `100`-pair smooth search subset. It already summarizes the progressive sweep over `tau`, `sharpness`, `ip_max_scale`, and `control_max_scale`.
+- `figures/final_stage/smooth_search_tradeoff.png` is still a search-stage plot on `100` conflict pairs, but it now combines the original smooth search and the later `tau=0.5` follow-up search into one view.
 - `figures/final_stage/smooth_sharpness_metrics.png` is the dedicated sharpness ablation plot from that same smooth search.
-- The later `tau_0p5` run was a full-set hard-switch confirmation only, so it does not regenerate a new smooth-search figure by itself.
+- The later `tau_0p5` hard run was a full-set confirmation; the `smooth tau=0.5` results shown below remain search-stage unless we explicitly run a matching `1000`-pair smooth confirmation.
 
 Additional `smooth tau=0.5` search result on `100` conflict pairs:
 
