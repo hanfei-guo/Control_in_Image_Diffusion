@@ -228,53 +228,48 @@ For each case:
 
 ## Current Result Snapshot
 
-The numbers below come from the full-set confirmations, not from the earlier `100`-pair hard/smooth search figures. The search plots are for tuning and trend visualization; the snapshot below is for final comparison across the methods that were actually confirmed on the full conflict set.
+Read this section by evidence level:
 
-Final full-set comparison on `1000` conflict pairs:
+- `[1000 pairs]` means a full-set confirmation that can be cited as a final quantitative result.
+- `[100 pairs]` means a search-stage subset result that is useful for operating-point comparison, but not yet at the same evidence level as a full-set confirmation.
 
-- `naive_combined`: best structure  
-  `Canny MSE mean = 0.1375`, `CLIP similarity mean = 0.6382`
-- `tau_0p25`: best semantics  
-  `Canny MSE mean = 0.1820`, `CLIP similarity mean = 0.8195`
-- `tau_0p5`: intermediate hard-switch operating point on the full set  
-  `Canny MSE mean = 0.1694`, `CLIP similarity mean = 0.7219`
-- `smooth_sharpness__tau_0p25__sharp_16p0`: slightly smoother compromise than hard scheduling at the same `tau`, but not a Pareto improvement over the hard result  
-  `Canny MSE mean = 0.1818`, `CLIP similarity mean = 0.7974`
+### Full-set confirmations (`1000` conflict pairs)
 
-We also include a separate `smooth tau=0.5` search-stage result below. It is useful for comparing operating points, but it is still a `100`-pair subset result rather than a `1000`-pair full-set confirmation.
+| Family | Tau | Mode | Canny MSE mean ↓ | CLIP similarity mean ↑ | Status |
+| --- | --- | --- | ---: | ---: | --- |
+| naive | - | `naive_combined` | 0.1375 | 0.6382 | best structure |
+| hard | 0.25 | `tau_0p25` | 0.1820 | 0.8195 | best semantics on the full set |
+| hard | 0.50 | `tau_0p5` | 0.1694 | 0.7219 | intermediate hard-switch operating point |
+| smooth | 0.25 | `smooth_sharpness__tau_0p25__sharp_16p0` | 0.1818 | 0.7974 | selected smooth full-set check |
+| smooth | 0.50 | not yet run on `1000` pairs | - | - | currently available only at search-stage level |
 
-Pairwise comparison against `naive_combined`:
+### Smooth-schedule operating points (`100`-pair search subsets)
+
+| Tau | Search stage | Mode | Canny MSE mean ↓ | CLIP similarity mean ↑ | Comment |
+| --- | --- | --- | ---: | ---: | --- |
+| 0.25 | base smooth candidate | `smooth_tau__tau_0p25` | 0.1716 | 0.7829 | starting point before extra smooth tuning |
+| 0.25 | best searched smooth config | `smooth_sharpness__tau_0p25__sharp_16p0` | 0.1668 | 0.7976 | strongest searched `tau=0.25` smooth compromise |
+| 0.50 | base smooth candidate | `smooth_tau__tau_0p5` | 0.1604 | 0.6874 | starting point before extra smooth tuning |
+| 0.50 | best searched smooth config | `smooth_ctrlmax__tau_0p5__sharp_16p0__ip_1p0__ctrl_1p2` | 0.1593 | 0.7065 | strongest searched `tau=0.5` smooth compromise |
+
+### Full-set pairwise comparisons against `naive_combined` (`1000` pairs)
 
 - `tau_0p25` wins on CLIP similarity for `96.6%` of samples, but wins on Canny MSE for only `8.2%`
 - `tau_0p5` wins on CLIP similarity for `79.8%` of samples, but wins on Canny MSE for only `11.0%`
 - `smooth_sharpness__tau_0p25__sharp_16p0` wins on CLIP similarity for `94.6%` of samples, but wins on Canny MSE for only `7.3%`
 
-Cross-checks between the scheduled methods:
+### Full-set cross-checks between scheduled methods (`1000` pairs)
 
 - `tau_0p5` beats `tau_0p25` on Canny MSE for `62.1%` of samples, but beats it on CLIP similarity for only `8.1%`
 - `smooth_sharpness__tau_0p25__sharp_16p0` beats `tau_0p5` on CLIP similarity for `86.4%` of samples, but beats it on Canny MSE for only `35.8%`
 
-This means the final experiments expose a clear structure / semantics trade-off rather than a schedule that dominates both objectives at once. The added `tau_0p5` full-set run behaves as an intermediate operating point, not as a new Pareto-dominant solution.
+### Smooth-schedule reading note
 
-Smooth-schedule note:
+- `figures/final_stage/smooth_search_tradeoff.png` is a search-stage plot on `100` conflict pairs, and it now combines the original smooth search with the later `tau=0.5` follow-up search in one view.
+- `figures/final_stage/smooth_sharpness_metrics.png` is the dedicated sharpness-ablation plot from the original smooth search.
+- The `tau_0p5` hard row above is a full-set confirmation; the `smooth tau=0.5` rows above are still search-stage results unless we explicitly run a matching `1000`-pair smooth confirmation.
 
-- `figures/final_stage/smooth_search_tradeoff.png` is still a search-stage plot on `100` conflict pairs, but it now combines the original smooth search and the later `tau=0.5` follow-up search into one view.
-- `figures/final_stage/smooth_sharpness_metrics.png` is the dedicated sharpness ablation plot from that same smooth search.
-- The later `tau_0p5` hard run was a full-set confirmation; the `smooth tau=0.5` results shown below remain search-stage unless we explicitly run a matching `1000`-pair smooth confirmation.
-
-Additional `smooth tau=0.5` search result on `100` conflict pairs:
-
-- Search root: `outputs/combined_experiments/search_100_conflict_smooth_tau_0p5`
-- Base `tau=0.5` smooth candidate: `smooth_tau__tau_0p5`  
-  `Canny MSE mean = 0.1604`, `CLIP similarity mean = 0.6874`
-- Best sharpness-stage candidate at fixed `tau=0.5`: `smooth_sharpness__tau_0p5__sharp_16p0`  
-  `Canny MSE mean = 0.1634`, `CLIP similarity mean = 0.6896`
-- Best IP-scale-stage candidate at fixed `tau=0.5, sharpness=16`: `smooth_ipmax__tau_0p5__sharp_16p0__ip_1p0`  
-  `Canny MSE mean = 0.1618`, `CLIP similarity mean = 0.7137`
-- Best searched `smooth tau=0.5` configuration on the `100`-pair subset: `smooth_ctrlmax__tau_0p5__sharp_16p0__ip_1p0__ctrl_1p2`  
-  `Canny MSE mean = 0.1593`, `CLIP similarity mean = 0.7065`
-
-This means we now have explicit smooth `tau=0.5` search data for teammate review, but it is still a search-stage result on `100` pairs rather than a `1000`-pair full-set confirmation.
+This layout is the intended interpretation: `tau=0.25` and `tau=0.5` are shown side by side, but the README now separates what is confirmed on the full set from what is only available as a smooth-search operating point.
 
 ## Repository Layout
 
