@@ -98,6 +98,9 @@ Final summary files:
 - `outputs/combined_experiments/final_eval_1000_conflict_extended/search_summary.csv`
 - `outputs/combined_experiments/final_eval_1000_conflict_extended/pairwise_summary.csv`
 - `outputs/combined_experiments/final_eval_1000_conflict_extended/per_sample_metrics.csv`
+- `outputs/combined_experiments/final_eval_1000_conflict_smooth_tau_0p5_tuned/search_summary.csv`
+- `outputs/combined_experiments/final_eval_1000_conflict_smooth_tau_0p5_tuned/pairwise_summary.csv`
+- `outputs/combined_experiments/final_eval_1000_conflict_smooth_tau_0p5_tuned/per_sample_metrics.csv`
 
 ## Visual Summary
 
@@ -241,7 +244,7 @@ Read this section by evidence level:
 | hard | 0.25 | `tau_0p25` | 0.1820 | 0.8195 | best semantics on the full set |
 | hard | 0.50 | `tau_0p5` | 0.1694 | 0.7219 | intermediate hard-switch operating point |
 | smooth | 0.25 | `smooth_sharpness__tau_0p25__sharp_16p0` | 0.1818 | 0.7974 | selected smooth full-set check |
-| smooth | 0.50 | not yet run on `1000` pairs | - | - | currently available only at search-stage level |
+| smooth | 0.50 | `smooth_ctrlmax__tau_0p5__sharp_16p0__ip_1p0__ctrl_1p2` | 0.1698 | 0.7059 | tuned smooth follow-up on the full set |
 
 ### Smooth-schedule operating points (`100`-pair search subsets)
 
@@ -257,6 +260,13 @@ Read this section by evidence level:
 - `tau_0p25` wins on CLIP similarity for `96.6%` of samples, but wins on Canny MSE for only `8.2%`
 - `tau_0p5` wins on CLIP similarity for `79.8%` of samples, but wins on Canny MSE for only `11.0%`
 - `smooth_sharpness__tau_0p25__sharp_16p0` wins on CLIP similarity for `94.6%` of samples, but wins on Canny MSE for only `7.3%`
+- `smooth_ctrlmax__tau_0p5__sharp_16p0__ip_1p0__ctrl_1p2` wins on CLIP similarity for `76.6%` of samples, but wins on Canny MSE for only `10.0%`
+
+### Full-set cross-checks for the new `smooth tau=0.5` mode (`1000` pairs)
+
+- `smooth_ctrlmax__tau_0p5__sharp_16p0__ip_1p0__ctrl_1p2` beats `tau_0p25` on Canny MSE for `61.6%` of samples, but beats it on CLIP similarity for only `5.8%`
+- `smooth_ctrlmax__tau_0p5__sharp_16p0__ip_1p0__ctrl_1p2` beats `smooth_sharpness__tau_0p25__sharp_16p0` on Canny MSE for `64.8%` of samples, but beats it on CLIP similarity for only `9.5%`
+- `smooth_ctrlmax__tau_0p5__sharp_16p0__ip_1p0__ctrl_1p2` is effectively tied with `tau_0p5`: it wins on Canny MSE for `50.2%` of samples and on CLIP similarity for `41.4%`, with mean deltas near zero
 
 ### Full-set cross-checks between scheduled methods (`1000` pairs)
 
