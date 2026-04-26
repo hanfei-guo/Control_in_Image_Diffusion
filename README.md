@@ -260,6 +260,20 @@ Smooth-schedule note:
 - `figures/final_stage/smooth_sharpness_metrics.png` is the dedicated sharpness ablation plot from that same smooth search.
 - The later `tau_0p5` run was a full-set hard-switch confirmation only, so it does not regenerate a new smooth-search figure by itself.
 
+Additional `smooth tau=0.5` search result on `100` conflict pairs:
+
+- Search root: `outputs/combined_experiments/search_100_conflict_smooth_tau_0p5`
+- Base `tau=0.5` smooth candidate: `smooth_tau__tau_0p5`  
+  `Canny MSE mean = 0.1604`, `CLIP similarity mean = 0.6874`
+- Best sharpness-stage candidate at fixed `tau=0.5`: `smooth_sharpness__tau_0p5__sharp_16p0`  
+  `Canny MSE mean = 0.1634`, `CLIP similarity mean = 0.6896`
+- Best IP-scale-stage candidate at fixed `tau=0.5, sharpness=16`: `smooth_ipmax__tau_0p5__sharp_16p0__ip_1p0`  
+  `Canny MSE mean = 0.1618`, `CLIP similarity mean = 0.7137`
+- Best searched `smooth tau=0.5` configuration on the `100`-pair subset: `smooth_ctrlmax__tau_0p5__sharp_16p0__ip_1p0__ctrl_1p2`  
+  `Canny MSE mean = 0.1593`, `CLIP similarity mean = 0.7065`
+
+This means we now have explicit smooth `tau=0.5` search data for teammate review, but it is still a search-stage result on `100` pairs rather than a `1000`-pair full-set confirmation.
+
 ## Repository Layout
 
 - `src/midway_project/`: reusable pipeline, scheduling, metrics, and final-stage analysis code
